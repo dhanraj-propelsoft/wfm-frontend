@@ -771,14 +771,31 @@ class _EmailVerficationState extends State<EmailVerfication> {
     final String replacement = List<String>.generate((replaceLength / 4).ceil(), (int _) => 'xxxx').join('');
     return code.replaceRange(0, replaceLength, replacement);
   }
+
+  static emailmask(String code) {
+
+    final String first_part = code.split("@")[0];
+
+    final String hashed_text = "xxxx";
+
+    final String remove_string = first_part.substring(0, first_part.length - 4);
+
+    return remove_string+hashed_text+code.split("@")[1];
+    // final int length = code.length;
+    // final int replaceLength = length - 2;
+    // final String replacement = List<String>.generate((length / 4).ceil(), (int _) => 'xxxx').join('');
+    //
+    // return code.replaceRange(0, replaceLength, replacement);
+  }
   @override
   void initState() {
     var number = getPayCardStr(widget.mobileno);
-
-    const String email = 'ka';
-    final bool isValid = EmailValidator.validate(email);
-
-    print('Email is valid? ' + (isValid ? 'yes' : 'no'));
+    var email = emailmask("diwaharsrd@gmail.com");
+    print(email);
+    // const String email = 'ka';
+    // final bool isValid = EmailValidator.validate(email);
+    //
+    // print('Email is valid? ' + (isValid ? 'yes' : 'no'));
 
     setState(() {
       Mobile_hashed = number;
