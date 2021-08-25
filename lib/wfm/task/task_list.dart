@@ -65,16 +65,18 @@ class _TaskListState extends State<TaskList> {
 
   Future<List> taskData() async {
     final orgId = await get_orgId();
+    print(orgId);
     final prefs = await SharedPreferences.getInstance();
     unAssignedcategory = prefs.getBool('unAssignedcategory') == null?true:prefs.getBool('unAssignedcategory');
     unAssignedProject = prefs.getBool('unAssignedproject') == null?true:prefs.getBool('unAssignedproject');
     var res = await Network().taskList('/Dashboard/$orgId');
 
     var body = json.decode(res.body);
-    if(body['status'] == 1){
-      var result = body['data'];
-      return result;
-    }
+    return [];
+    // if(body['status'] == 1){
+    //   var result = body['data'];
+    //   return result;
+    // }
   }
 
   Future<List> action_changed(int actionId,int statusId,int taskId) async {
@@ -634,7 +636,7 @@ class _TaskListState extends State<TaskList> {
                   child: Center(
                     child: AwesomeLoader(
                       loaderType: AwesomeLoader.AwesomeLoader3,
-                      // color: Colors.orange,
+                      color: Colors.orange,
                     ),
                   ),
                 ),

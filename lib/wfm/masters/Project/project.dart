@@ -322,7 +322,7 @@ class _projectState extends State<project> {
                   child: Center(
                     child: AwesomeLoader(
                       loaderType: AwesomeLoader.AwesomeLoader3,
-                      // color: Colors.blue,
+                      color: Colors.orange,
                     ),
                   ),
                 ),

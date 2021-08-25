@@ -71,9 +71,11 @@ class _categoryState extends State<category> {
       print("offline mode");
     }
   }
+
   Future<List> categoryData() async {
     final prefs = await SharedPreferences.getInstance();
     final orgId = await get_orgId();
+
     var res = await Network().categoryList('/CategoryList/$orgId');
     var body = json.decode(res.body);
     if(body['status'] == 1){
@@ -182,7 +184,6 @@ class _categoryState extends State<category> {
     myFuture = categoryData();
     checkconnections();
     super.initState();
-
   }
   @override
   Widget build(BuildContext context) {
@@ -303,32 +304,6 @@ class _categoryState extends State<category> {
                             ),
                           ),
                         ),
-                        // Container(
-                        //   // padding: EdgeInsets.only(left: 50),
-                        //   child: ListTile(
-                        //     title: Text("UnAssigned Category"),
-                        //     trailing: Container(
-                        //         width: 60,
-                        //         child: Switch(
-                        //           value: unAssigned,
-                        //           // onChanged: (bool value) {
-                        //           //   setState(() {
-                        //           //     unAssigned = value;
-                        //           //   });
-                        //           //   // obtain shared preferences
-                        //           //   final prefs = await SharedPreferences.getInstance();
-                        //           //   // set value
-                        //           //   prefs.setInt('orgid', orgid);
-                        //           // },
-                        //           onChanged: (bool expanding) => _unAssigned(expanding),
-                        //           activeColor: Colors.white,
-                        //           activeTrackColor: Colors.green,
-                        //           inactiveThumbColor: Colors.white,
-                        //           inactiveTrackColor: Colors.red,
-                        //         )
-                        //     ),
-                        //   ),
-                        // ),
                         Expanded(
                           child: SingleChildScrollView(
                             child: ListView.builder(
@@ -376,7 +351,7 @@ class _categoryState extends State<category> {
                 child: Center(
                   child: AwesomeLoader(
                     loaderType: AwesomeLoader.AwesomeLoader3,
-                    // color: Colors.blue,
+                    color: Colors.orange,
                   ),
                 ),
               );
