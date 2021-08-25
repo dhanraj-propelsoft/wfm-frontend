@@ -11,6 +11,7 @@ import 'package:propel/main.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:io';
 import 'package:bottom_loader/bottom_loader.dart';
+import 'package:propel/Settings/Home.dart';
 
 class MainPage extends StatefulWidget {
   final int index;
@@ -73,10 +74,13 @@ class _MainPageState extends State<MainPage> {
 
     }
   }
+
   _loadUserData() async{
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     var user = jsonDecode(localStorage.getString('user'));
     var Data = jsonDecode(localStorage.getString('allData'));
+    print("firstorg");
+    print(Data['firstOrg']);
     if(Data['firstOrg'] == 0){
       setState(() {
         firstOrg = false;
@@ -94,6 +98,7 @@ class _MainPageState extends State<MainPage> {
       });
     }
   }
+
   TabBar get _tabBar => TabBar(
     indicatorColor: Colors.orangeAccent,
     labelColor: Colors.black,
@@ -121,48 +126,7 @@ class _MainPageState extends State<MainPage> {
   //   ),
   // ];
   Widget build(BuildContext context) {
-    // return Scaffold(
-    //   appBar: AppBar(
-    //     title: Text("Propel"),
-    //     // bottom: TabBar(
-    //     //   tabs: <Widget>[
-    //     //     Tab(text: "Org",
-    //     //     ),
-    //     //     Tab(text: "Org2",
-    //     //     ),
-    //     //     Tab(text: "Org3",
-    //     //     ),
-    //     //
-    //     //   ],
-    //     // ),
-    //   ),
-    //   drawer: Drawer(
-    //     elevation: 16.0,
-    //     child: Column(
-    //       children: <Widget>[
-    //         UserAccountsDrawerHeader
-    //           (accountName: Text("Ajith"),
-    //           accountEmail: Text("kajithaji98@gmail.com"),
-    //           currentAccountPicture: CircleAvatar(
-    //             child: Text("A",style: new TextStyle(
-    //               fontSize: 40.0,
-    //               // color: Colors.yellow,
-    //             ),),
-    //             backgroundColor: Colors.lightBlue[50],
-    //             maxRadius: 30,
-    //           ),
-    //         )
-    //       ],
-    //     ),
-    //   ),
-    //   floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-    //   floatingActionButton: FloatingActionButton(
-    //     child: Icon(Icons.add),
-    //     backgroundColor: Colors.blue,
-    //     onPressed: () {
-    //     },
-    //   ),
-    // );
+
     return DefaultTabController(
       length: 4,
       initialIndex: initalindex,
@@ -171,6 +135,17 @@ class _MainPageState extends State<MainPage> {
           backgroundColor: Colors.orange,
           iconTheme: IconThemeData(color: Colors.white),
           title: Text("Ado unbox",style: TextStyle(color: Colors.white),),
+          leading: IconButton(
+            icon: Icon(Icons.menu),
+            onPressed: (){
+              Navigator.push(
+                context,
+                new MaterialPageRoute(
+                    builder: (context) => Setting()
+                ),
+              );
+            },
+          ),
           bottom: PreferredSize(
             preferredSize: _tabBar.preferredSize,
             child: ColoredBox(
@@ -192,48 +167,48 @@ class _MainPageState extends State<MainPage> {
             // ])
           ],
         ),
-        drawer: Drawer(
-          elevation: 16.0,
-          child: Column(
-            children: <Widget>[
-              UserAccountsDrawerHeader
-                (accountName: Text(name.toString(),style: TextStyle(color: Colors.white),),
-                accountEmail: Text(email.toString(),style: TextStyle(color: Colors.white),),
-                currentAccountPicture: CircleAvatar(
-                  child: Text(name.toString().substring(0,1).toUpperCase(),style: new TextStyle(
-                    fontSize: 40.0,
-                    color: Colors.grey,
-                  ),),
-                  backgroundColor: Colors.white,
-                  maxRadius: 30,
-
-                ),
-              ),
-              ListTile(
-                leading: Icon(Icons.home),
-                title: Text("Home"),
-                onTap: (){},
-              ),
-              ListTile(
-                leading: Icon(Icons.person),
-                title: Text("profile"),
-                onTap: (){},
-              ),
-              ListTile(
-                leading: Icon(Icons.settings),
-                title: Text("Setting"),
-                onTap: (){},
-              ),
-              ListTile(
-                leading: Icon(Icons.exit_to_app),
-                title: Text("Logout"),
-                onTap: (){
-                  logout();
-                },
-              )
-            ],
-          ),
-        ),
+        // drawer: Drawer(
+        //   elevation: 16.0,
+        //   child: Column(
+        //     children: <Widget>[
+        //       UserAccountsDrawerHeader
+        //         (accountName: Text(name.toString(),style: TextStyle(color: Colors.white),),
+        //         accountEmail: Text(email.toString(),style: TextStyle(color: Colors.white),),
+        //         currentAccountPicture: CircleAvatar(
+        //           child: Text(name.toString().substring(0,1).toUpperCase(),style: new TextStyle(
+        //             fontSize: 40.0,
+        //             color: Colors.grey,
+        //           ),),
+        //           backgroundColor: Colors.white,
+        //           maxRadius: 30,
+        //
+        //         ),
+        //       ),
+        //       ListTile(
+        //         leading: Icon(Icons.home),
+        //         title: Text("Home"),
+        //         onTap: (){},
+        //       ),
+        //       ListTile(
+        //         leading: Icon(Icons.person),
+        //         title: Text("profile"),
+        //         onTap: (){},
+        //       ),
+        //       ListTile(
+        //         leading: Icon(Icons.settings),
+        //         title: Text("Setting"),
+        //         onTap: (){},
+        //       ),
+        //       ListTile(
+        //         leading: Icon(Icons.exit_to_app),
+        //         title: Text("Logout"),
+        //         onTap: (){
+        //           logout();
+        //         },
+        //       )
+        //     ],
+        //   ),
+        // ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: firstOrg?FloatingActionButton(
           child: Icon(Icons.post_add_rounded,color: Colors.white,),
@@ -269,7 +244,9 @@ class _MainPageState extends State<MainPage> {
      bl.display();
     var res = await Network().getData('/logout');
     var body = json.decode(res.body);
+
     if(body['status'] == '1'){
+
       SharedPreferences localStorage = await SharedPreferences.getInstance();
       localStorage.remove('user');
       localStorage.remove('token');
@@ -279,6 +256,8 @@ class _MainPageState extends State<MainPage> {
       prefs.remove('unAssignedcategory');
       prefs.remove('unAssignedproject');
       bl.close();
+
+
       Navigator.push(
           context,
           MaterialPageRoute(builder: (context)=>CheckAuth()));

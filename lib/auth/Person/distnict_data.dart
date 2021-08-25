@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:bottom_loader/bottom_loader.dart';
+import 'package:propel/auth/Person/Person.dart';
 import 'package:propel/auth/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -10,214 +11,18 @@ import 'package:flutter/gestures.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:propel/main_page.dart';
 import 'package:awesome_loader/awesome_loader.dart';
-import 'package:propel/auth/Person/distnict_data.dart';
 
 
-class EmailVerfication extends StatefulWidget {
+class distnictOTP extends StatefulWidget {
   final String mobileno;
-  final bool user_credentials;
-  const EmailVerfication({Key key,this.mobileno,this.user_credentials}) : super(key: key);
+  final String email;
+  const distnictOTP({Key key,this.mobileno,this.email}) : super(key: key);
   @override
-  _EmailVerficationState createState() => _EmailVerficationState();
+  _distnictOTPState createState() => _distnictOTPState();
 }
 
-class _EmailVerficationState extends State<EmailVerfication> {
+class _distnictOTPState extends State<distnictOTP> {
 
-  final email = new TextEditingController();
-  String Mobile_hashed;
-  bool emailVal = false;
-  bool invalidphone = false;
-  bool isButtonEnabled = false;
-  BottomLoader bl;
-
-
-  static getPayCardStr(String code) {
-    final int length = code.length;
-    final int replaceLength = length - 2;
-    final String replacement = List<String>.generate((replaceLength / 4).ceil(), (int _) => 'xxxx').join('');
-    return code.replaceRange(0, replaceLength, replacement);
-  }
-
-  void PartialData() async{
-
-    bl = new BottomLoader(
-      context,
-      showLogs: true,
-      isDismissible: true,
-    );
-    bl.style(
-      message: 'Please wait...',
-    );
-    bl.display();
-
-    var data = {
-      'mobileNo' : widget.mobileno,
-      'email' : email.text
-    };
-    var res = await Network().authData(data, '/get_persondetails');
-    var body = json.decode(res.body);
-
-
-    if(widget.user_credentials){
-
-      if(body['status'] == 1){
-
-        bl.close();
-        Navigator.push(context,
-            MaterialPageRoute(
-                builder: (context) => loginCredtionalMsg(
-                    personId:body['data']['id'],
-                    mobileno:widget.mobileno,
-                    user_credtional:widget.user_credentials,
-                    email:email.text
-                )));
-      }else if(body['status'] == 2){
-        bl.close();
-        Fluttertoast.showToast(
-            msg: "MobileNo and Email does not matched any persons",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            // timeInSecForIos: 1,
-            backgroundColor: Colors.grey,
-            textColor: Colors.black
-        );
-
-      }else{
-
-        bl.close();
-        Navigator.push(context,
-            MaterialPageRoute(
-                builder: (context) => distnictOTP(
-                    mobileno:widget.mobileno,
-                    email:email.text
-                )));
-
-      }
-
-    }else{
-      bl.close();
-      Navigator.push(context,
-          MaterialPageRoute(
-              builder: (context) => loginCredtionalMsg(
-                  personId:0,
-                  mobileno:widget.mobileno,
-                  user_credtional:widget.user_credentials,
-                  email:email.text
-              )));
-    }
-
-
-
-  }
-
-  static emailmask(String code) {
-
-    final String first_part = code.split("@")[0];
-
-    final String hashed_text = "xxxx";
-
-    final String remove_string = first_part.substring(0, first_part.length - 4);
-
-    return remove_string+hashed_text+code.split("@")[1];
-    // final int length = code.length;
-    // final int replaceLength = length - 2;
-    // final String replacement = List<String>.generate((length / 4).ceil(), (int _) => 'xxxx').join('');
-    //
-    // return code.replaceRange(0, replaceLength, replacement);
-  }
-  @override
-  void initState() {
-    var number = getPayCardStr(widget.mobileno);
-    var email = emailmask("diwaharsrd@gmail.com");
-    print(widget.user_credentials);
-    // const String email = 'ka';
-    // final bool isValid = EmailValidator.validate(email);
-    //
-    // print('Email is valid? ' + (isValid ? 'yes' : 'no'));
-
-    setState(() {
-      Mobile_hashed = number;
-    });
-  }
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        body: Container(
-          padding: EdgeInsets.only(left:25,right: 25),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Center(
-                child: Text("No credentials are found, with your mobile number $Mobile_hashed, Kindly provide email for cross verification"),
-              ),
-              TextField(
-                onChanged:(val){
-
-                  if (val.trim().isEmpty){
-                    setState(() {
-                      isButtonEnabled = false;
-                    });
-                  }else{
-                    setState(() {
-                      isButtonEnabled = true;
-                    });
-                  }
-
-                },
-                obscureText: false,
-                decoration: InputDecoration(
-                  // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                  hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
-                  hintText: "Enter your Personal Email Only",
-                  labelText: "Email",
-                  // errorText: isemailValid ? "Invalid Email address":"a",
-                  // border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
-                ),
-                controller: email,
-              ),
-              SizedBox(height: 20,),
-              RaisedButton(
-                color: Colors.orange,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    // Icon(Icons.direc,color: Colors.white),
-                    Text('Next',style: TextStyle(color: Colors.white,),),
-                  ],
-                ),
-                onPressed:  isButtonEnabled?() {
-                  PartialData();
-                }:null,
-              ),
-            ],
-          ),
-        )
-    );
-  }
-}
-
-class AccountCreateOTP extends StatefulWidget {
-
-  final String mobileno;
-  final int salution;
-  final String first_name;
-  final String middle_name;
-  final String last_name;
-  final String alisas;
-  final int gender;
-  final String Dob;
-  final int bloodgroup;
-
-
-  const AccountCreateOTP({Key key,this.mobileno,this.salution,this.first_name,this.middle_name,this.last_name,this.alisas,this.Dob,this.bloodgroup,this.gender}) : super(key: key);
-  @override
-  _AccountCreateOTPState createState() => _AccountCreateOTPState();
-}
-
-class _AccountCreateOTPState extends State<AccountCreateOTP> {
   final otp = new TextEditingController();
   String Mobile_hashed;
   bool otp_validate = false;
@@ -231,16 +36,97 @@ class _AccountCreateOTPState extends State<AccountCreateOTP> {
     return code.replaceRange(0, replaceLength, replacement);
   }
 
+  void send_otp()async{
+
+    bl = new BottomLoader(
+      context,
+      showLogs: true,
+      isDismissible: true,
+    );
+    bl.style(
+      message: 'Please wait...',
+    );
+    bl.display();
+
+    var data = {
+      'mobile_no' : widget.mobileno,
+      'first_name': "text"
+    };
+    var res = await Network().authData(data, '/sendOtpPerson');
+    var body = json.decode(res.body);
+
+    if(body['message'] != "SUCCESS"){
+
+      Fluttertoast.showToast(
+          msg: "OTP did not send Server error,contact Admin",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          // timeInSecForIos: 1,
+          backgroundColor: Colors.grey[200],
+          textColor: Colors.black
+      );
+
+    }
+
+
+  }
+
+  void OTP_Validate()async{
+
+    bl = new BottomLoader(
+      context,
+      showLogs: true,
+      isDismissible: true,
+    );
+    bl.style(
+      message: 'Please wait...',
+    );
+    bl.display();
+
+    var data = {
+      'mobile_no' : widget.mobileno,
+      'otp':otp.text
+    };
+    print(otp.text);
+    var res = await Network().authData(data, '/getTmpPersonFile');
+    var body = json.decode(res.body);
+
+    if(body['message'] == "SUCCESS"){
+      bl.close();
+      Navigator.push(context,
+          MaterialPageRoute(
+              builder: (context) => AccountList(
+                  otp:int.parse(otp.text),
+                  mobileno:widget.mobileno,
+                  email:widget.email
+              )));
+
+    }else{
+      bl.close();
+      Fluttertoast.showToast(
+          msg: "OTP MisMatched",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          // timeInSecForIos: 1,
+          backgroundColor: Colors.grey[200],
+          textColor: Colors.black
+      );
+
+    }
+
+
+  }
+
   @override
   void initState() {
     var number = getPayCardStr(widget.mobileno);
     setState(() {
       Mobile_hashed = number;
     });
+    send_otp();
   }
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: Container(
         padding: EdgeInsets.only(left:25,right: 25),
@@ -275,7 +161,7 @@ class _AccountCreateOTPState extends State<AccountCreateOTP> {
             ),
             SizedBox(height: 20,),
             RaisedButton(
-              color: Colors.green,
+              color: Colors.orange,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -287,16 +173,39 @@ class _AccountCreateOTPState extends State<AccountCreateOTP> {
               ),
               onPressed: otp_validate?(){
 
-                // OTP_Validate(otp.text,widget.userid);
+                OTP_Validate();
               }:null,
             ),
-
           ],
         ),
       ),
     );
   }
-  void OTP_Validate (OTP,user_id)async{
+}
+
+class AccountList extends StatefulWidget {
+  final String mobileno;
+  final String email;
+  final int otp;
+  const AccountList({Key key,this.mobileno,this.email,this.otp}) : super(key: key);
+  @override
+  _AccountListState createState() => _AccountListState();
+}
+
+class _AccountListState extends State<AccountList> {
+
+  bool selectradio = false;
+  String noneofabove;
+  BottomLoader bl;
+  int SelectPersonId;
+  int initialValue;
+  Future myFuture;
+  String email;
+  String Name;
+  List  Accountlist;
+
+
+  Future<List> get_AccountList() async {
     bl = new BottomLoader(
       context,
       showLogs: true,
@@ -306,156 +215,301 @@ class _AccountCreateOTPState extends State<AccountCreateOTP> {
       message: 'Please wait...',
     );
     bl.display();
+    var mobile_no = widget.mobileno;
+    var res = await Network().Mobile_NO_Check('/get_account_list/$mobile_no');
+    var body = json.decode(res.body);
+    print(body);
+    if(body['status'] == 1){
+      var result = body['data'];
+      Accountlist = body['data'];
+
+      Accountlist.removeWhere((item) => item['pHavingUser'] == true);
+
+      return Accountlist;
+    }
+
+
+  }
+
+  void choose_person()async{
+
+    bl = new BottomLoader(
+      context,
+      showLogs: true,
+      isDismissible: true,
+    );
+    bl.style(
+      message: 'Please wait...',
+    );
+    bl.display();
+    if(SelectPersonId == 0){
+      bl.close();
+      Navigator.push(context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  EmailVerfication(
+                      mobileno: widget.mobileno,
+                      user_credentials : false
+                  )));
+    }else{
+      bl.close();
+
+      Navigator.push(context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  EmailOTP(
+                      otp:widget.otp,
+                      personId:SelectPersonId,
+                      mobileno: widget.mobileno,
+                      email : email,
+                      name:Name
+                  )));
+
+
+
+    }
+  }
+
+  @override
+  void initState() {
+    myFuture = get_AccountList();
+    super.initState();
+
+  }
+  @override
+  Widget build(BuildContext context) {
+    var mobileno = widget.mobileno;
+
+    return Scaffold(
+      body: new FutureBuilder<List>(
+          future: myFuture,
+          builder: (BuildContext context, AsyncSnapshot snapshot){
+            if(snapshot.hasError){
+              print('Error in Loading'+snapshot.error.toString());
+            }
+            if(snapshot.hasData){
+                return Scaffold(
+                  appBar: AppBar(
+                    backgroundColor: Colors.grey[350],
+                    title: Text("Choose Account",style: TextStyle(color: Colors.black),),
+                    leading: IconButton(icon: Icon(Icons.arrow_back,color: Colors.black,),onPressed: (){
+                      Navigator.of(context).pop();
+                    },),
+                  ),
+                   body: Container(
+                      padding: EdgeInsets.all(20.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Center(child: Text("This mobile number $mobileno has these record on our system")),
+                          SizedBox(height: 20.0,),
+                          Center(child: Text("By selecting one of them you ensure its your record and also you can edit and update spelling errors once you’re login")),
+                          Divider(),
+                          Expanded(
+                            child: ListView.builder(
+                              itemCount: snapshot.data.length,
+                              itemBuilder: (context,i) {
+                              var first_name = snapshot.data[i]['pFirstName'];
+                              var middle_name = snapshot.data[i]['pMiddleName'];
+                              var last_name = snapshot.data[i]['pLastName'];
+                                initialValue = snapshot.data[i]['pId'];
+
+                                return Column(
+                                  children: [
+                                    ListTile(
+                                      leading: CircleAvatar(
+                                        // backgroundImage: AssetImage(widget.image),
+                                        child: Text(
+                                            snapshot.data[i]['pFirstName'].toString()
+                                                .substring(0, 1)
+                                                .toUpperCase()),
+                                        maxRadius: 20,
+                                      ),
+                                      title: Text('$first_name'+' '+'$middle_name'+' '+'$last_name'),
+                                      subtitle: Text(snapshot.data[i]['pPersonEmailDetails']['email']),
+                                      trailing: Radio(
+                                        value: initialValue,
+                                        groupValue: SelectPersonId,
+                                        onChanged: (int value) {
+                                          setState(() {
+                                            email = snapshot.data[i]['pPersonEmailDetails']['email'];
+                                            SelectPersonId = value;
+                                            selectradio = true;
+                                            Name = snapshot.data[i]['pFirstName'];
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                    Divider(),
+                                  ],
+                                );
+                            }),
+                          ),
+                          ListTile(
+                            title: Text("None of the above record is mine create a new account for me"),
+                            trailing: Radio(
+                              value: 0,
+                              groupValue: SelectPersonId,
+                              onChanged: (int value) {
+                                setState(() {
+                                  SelectPersonId = value;
+                                  selectradio = true;
+                                });
+                              },
+                            ),
+                          ),
+                          Divider(),
+                          RaisedButton(
+                            color: Colors.orange,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                // Icon(Icons.direc,color: Colors.white),
+                                Text('Continue',style: TextStyle(color: Colors.white,),),
+                              ],
+                            ),
+                            onPressed: selectradio?(){
+                             choose_person();
+                            }:null,
+                          ),
+
+                        ],
+                      ),
+                    )
+
+                );
+            }else{
+              return Container(
+                child: Center(
+                  child: AwesomeLoader(
+                    loaderType: AwesomeLoader.AwesomeLoader3,
+                    // color: Colors.blue,
+                  ),
+                ),
+              );
+            }
+          }),
+    );
+
+  }
+}
+
+class EmailOTP extends StatefulWidget {
+  final String mobileno;
+  final String email;
+  final int personId;
+  final String name;
+  final int otp;
+  EmailOTP({ Key key,this.mobileno,this.email,this.personId,this.name,this.otp}): super(key: key);
+  @override
+  _EmailOTPState createState() => _EmailOTPState();
+}
+
+class _EmailOTPState extends State<EmailOTP> {
+  bool otp_validate = false;
+  BottomLoader bl;
+  final otp = new TextEditingController();
+
+  static getPayCardStr(String code) {
+
+    final int length = code.length;
+    final int replaceLength = length - 2;
+    final String replacement = List<String>.generate((replaceLength / 4).ceil(), (int _) => 'xxxx').join('');
+    return code.replaceRange(0, replaceLength, replacement);
+  }
+
+  void send_otp_email() async{
+    bl = new BottomLoader(
+      context,
+      showLogs: true,
+      isDismissible: true,
+    );
+    bl.style(
+      message: 'Please wait...',
+    );
+    bl.display();
+
     var data = {
-      'userId' : user_id,
-      'otp' : OTP
+      'email_id' : widget.email,
+      'personId':widget.personId,
+      'name':widget.name
     };
-    var res = await Network().authData(data, '/OTPVerification');
+
+    var res = await Network().authData(data, '/sendotp_email');
     var body = json.decode(res.body);
 
-    // if(body['message'] == "SUCCESS") {
-    //   bl.close();
-    //   Navigator.push(
-    //     context,
-    //     new MaterialPageRoute(
-    //         builder: (context) => Forgot_Password(userid: user_id)
-    //     ),
-    //   );
-    //
-    // }else{
-    //   bl.close();
-    //   Fluttertoast.showToast(
-    //       msg: "OTP is Invalid",
-    //       toastLength: Toast.LENGTH_SHORT,
-    //       gravity: ToastGravity.BOTTOM,
-    //       // timeInSecForIos: 1,
-    //       backgroundColor: Colors.grey,
-    //       textColor: Colors.black
-    //   );
-    // }
+
+    if(body['status'] != 1){
+
+      bl = new BottomLoader(
+        context,
+        showLogs: true,
+        isDismissible: true,
+      );
+      bl.style(
+        message: 'Please wait...',
+      );
+      bl.display();
+    }
+
+
+
   }
-}
 
-class loginCredtionalMsg extends StatefulWidget {
-  final String mobileno;
-  final String email;
-  final bool user_credtional;
-  final int personId;
-  const loginCredtionalMsg({Key key,this.mobileno,this.user_credtional,this.email,this.personId}) : super(key: key);
-  @override
-  _loginCredtionalMsgState createState() => _loginCredtionalMsgState();
-}
+  void otp_verfiy() async{
 
-class _loginCredtionalMsgState extends State<loginCredtionalMsg> {
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: widget.user_credtional?Container(
-        padding: EdgeInsets.only(left:25,right: 25),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text("Ado unbox",style: TextStyle(color: Colors.orangeAccent,fontSize: 50.0,fontStyle: FontStyle.italic),),
-            SizedBox(height: 50.0,),
-            Align(alignment: Alignment.centerLeft,
-                child: Text("No user information was found on Our System,")),
-            SizedBox(height: 20,),
-            Align(
-                alignment: Alignment.centerLeft,
-                child: Text("to continue further kindly signup for a new account by fill the following details.")),
-            SizedBox(height: 20,),
-            Align(
-                alignment: Alignment.centerLeft,
-                child: Text("Its our Pleasure to have you as user")),
-            SizedBox(height: 20,),
-            RaisedButton(
-              color: Colors.orange,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  // Icon(Icons.direc,color: Colors.white),
-                  Text('Continue',style: TextStyle(color: Colors.white,),),
-                ],
-              ),
-              onPressed: (){
-
-                Navigator.push(context,
-                    MaterialPageRoute(
-                        builder: (context) => AccountVerfied(
-                            personId:widget.personId,
-                            mobileno:widget.mobileno,
-                            email:widget.email
-                        )));
-              },
-            ),
-
-          ],
-        ),
-      ):Container(
-        padding: EdgeInsets.only(left:25,right: 25),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text("Ado unbox",style: TextStyle(color: Colors.orangeAccent,fontSize: 50.0,fontStyle: FontStyle.italic),),
-            SizedBox(height: 50.0,),
-            Align(alignment: Alignment.centerLeft,
-                child: Text("No user login information was found,")),
-            SizedBox(height: 20,),
-            Align(
-                alignment: Alignment.centerLeft,
-                child: Text("kindly fill the missing details and signup for a new account.")),
-            SizedBox(height: 20,),
-            Align(
-                alignment: Alignment.centerLeft,
-                child: Text("Its our Pleasure to have you as user")),
-            SizedBox(height: 20,),
-            RaisedButton(
-              color: Colors.orange,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  // Icon(Icons.direc,color: Colors.white),
-                  Text('Continue',style: TextStyle(color: Colors.white,),),
-                ],
-              ),
-              onPressed: (){
-
-                Navigator.push(context,
-                    MaterialPageRoute(
-                        builder: (context) => AccountVerfied(
-                            personId:widget.personId,
-                            mobileno:widget.mobileno,
-                            email:widget.email
-                        )));
-              },
-            ),
-
-          ],
-        ),
-      ),
+    bl = new BottomLoader(
+      context,
+      showLogs: true,
+      isDismissible: true,
     );
+    bl.style(
+      message: 'Please wait...',
+    );
+    bl.display();
+
+    var data = {
+      'email_id' : widget.email,
+      'otp':otp.text
+    };
+
+    var res = await Network().authData(data, '/verifiy_email_otp');
+    var body = json.decode(res.body);
+    if(body['message'] == "SUCCESS"){
+
+    bl.close();
+      Navigator.push(context,
+          MaterialPageRoute(
+              builder: (context) => distnictAccountVerfied(otp:widget.otp,mobileno:widget.mobileno,email:widget.email,personId: widget.personId)));
+
+    }else{
+
+        Fluttertoast.showToast(
+            msg: "OTP is Invalid",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            // timeInSecForIos: 1,
+            backgroundColor: Colors.grey,
+            textColor: Colors.black
+        );
+    }
+
+
   }
-}
 
-class AccountConformationMsg extends StatefulWidget {
-  final String mobileno;
-  final String email;
-  const AccountConformationMsg({Key key,this.mobileno,this.email}) : super(key: key);
   @override
-  _AccountConformationMsgState createState() => _AccountConformationMsgState();
-}
-
-class _AccountConformationMsgState extends State<AccountConformationMsg> {
+  void initState() {
+    var number = getPayCardStr(widget.mobileno);
+    send_otp_email();
+    super.initState();
+  }
   @override
-
   Widget build(BuildContext context) {
+    var email = widget.email;
+
     return Scaffold(
       body: Container(
         padding: EdgeInsets.only(left:25,right: 25),
@@ -463,41 +517,49 @@ class _AccountConformationMsgState extends State<AccountConformationMsg> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text("Ado unbox",style: TextStyle(color: Colors.orangeAccent,fontSize: 50.0,fontStyle: FontStyle.italic),),
-            SizedBox(height: 50.0,),
-            Align(alignment: Alignment.centerLeft,
-                child: Text("No user login information was found,")),
-            SizedBox(height: 20,),
-            Align(
-                alignment: Alignment.centerLeft,
-                child: Text("kindly fill the missing details and signup for a new account.")),
-            SizedBox(height: 20,),
-            Align(
-                alignment: Alignment.centerLeft,
-                child: Text("Its our Pleasure to have you as user")),
+            TextField(
+              onChanged:(val){
+
+                if (val.trim().isEmpty || val.length != 4){
+                  setState(() {
+                    otp_validate = false;
+                  });
+                }else{
+                  setState(() {
+                    otp_validate = true;
+                  });
+                }
+
+              },
+              textAlign: TextAlign.center,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                // labelText: 'Password',
+                hintText: "OTP Received on your Email $email",
+                hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
+
+
+              ),
+              controller: otp,
+            ),
             SizedBox(height: 20,),
             RaisedButton(
-              color: Colors.green,
+              color: Colors.orange,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   // Icon(Icons.direc,color: Colors.white),
-                  Text('Continue',style: TextStyle(color: Colors.white,),),
+                  Text('Validate',style: TextStyle(color: Colors.white,),),
                 ],
               ),
-              onPressed: (){
+              onPressed: otp_validate?(){
 
-                Navigator.push(context,
-                    MaterialPageRoute(
-                        builder: (context) => AccountVerfied(
-                            mobileno:widget.mobileno,
-                            email:widget.email
-                        )));
-              },
+                otp_verfiy();
+
+              }:null,
             ),
-
           ],
         ),
       ),
@@ -505,16 +567,17 @@ class _AccountConformationMsgState extends State<AccountConformationMsg> {
   }
 }
 
-class AccountVerfied extends StatefulWidget {
+class distnictAccountVerfied extends StatefulWidget {
   final String mobileno;
   final String email;
   final int personId;
-  const AccountVerfied({Key key,this.mobileno,this.email,this.personId}) : super(key: key);
+  final int otp;
+  const distnictAccountVerfied({Key key,this.mobileno,this.email,this.personId,this.otp}) : super(key: key);
   @override
-  _AccountVerfiedState createState() => _AccountVerfiedState();
+  _distnictAccountVerfiedState createState() => _distnictAccountVerfiedState();
 }
 
-class _AccountVerfiedState extends State<AccountVerfied> {
+class _distnictAccountVerfiedState extends State<distnictAccountVerfied> {
   final mobileno = new TextEditingController();
   final email = new TextEditingController();
   bool selectradio = false;
@@ -536,8 +599,9 @@ class _AccountVerfiedState extends State<AccountVerfied> {
       Navigator.push(context,
           MaterialPageRoute(
               builder: (context) =>
-                  NewAccountCreate1(
-                    personId:widget.personId,
+                  distinictAccountCreate1(
+                      otp:widget.otp,
+                      personId:widget.personId,
                       mobileno: widget.mobileno,
                       email: widget.email
                   )));
@@ -562,15 +626,15 @@ class _AccountVerfiedState extends State<AccountVerfied> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.grey[200],
-          title: Text("Create a Account",style: TextStyle(color: Colors.grey),),
-          leading: IconButton(icon: Icon(Icons.arrow_back,color: Colors.grey,),onPressed: (){
-            Navigator.of(context).pop();
-          },
-            ),
+      appBar: AppBar(
+        backgroundColor: Colors.grey[200],
+        title: Text("Create a Account",style: TextStyle(color: Colors.grey),),
+        leading: IconButton(icon: Icon(Icons.arrow_back,color: Colors.grey,),onPressed: (){
+          Navigator.of(context).pop();
+        },
         ),
-        body: Container(
+      ),
+      body: Container(
         padding: EdgeInsets.only(left:25,right: 25),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -695,16 +759,17 @@ class _AccountVerfiedState extends State<AccountVerfied> {
   }
 }
 
-class NewAccountCreate1 extends StatefulWidget {
+class distinictAccountCreate1 extends StatefulWidget {
   final String mobileno;
   final String email;
   final int personId;
-  NewAccountCreate1({ Key key,this.mobileno,this.email,this.personId}): super(key: key);
+  final int otp;
+  distinictAccountCreate1({ Key key,this.mobileno,this.email,this.personId,this.otp}): super(key: key);
   @override
-  _NewAccountCreate1State createState() => _NewAccountCreate1State();
+  _distinictAccountCreate1State createState() => _distinictAccountCreate1State();
 }
 
-class _NewAccountCreate1State extends State<NewAccountCreate1> {
+class _distinictAccountCreate1State extends State<distinictAccountCreate1> {
 
   List SalutionList;
   final FirstName = new TextEditingController();
@@ -723,6 +788,7 @@ class _NewAccountCreate1State extends State<NewAccountCreate1> {
     });
     var res = await Network().Mobile_NO_Check('/finddataByPersonId/$personid');
     var body = json.decode(res.body);
+
     if(body['status'] == 1){
       var result = body['data'];
 
@@ -753,7 +819,12 @@ class _NewAccountCreate1State extends State<NewAccountCreate1> {
   @override
   void initState() {
     super.initState();
-    get_data(widget.personId);
+    if(widget.personId != 0){
+      get_data(widget.personId);
+      setState(() {
+        isButtonEnabled = true;
+      });
+    }
 
   }
   @override
@@ -817,8 +888,9 @@ class _NewAccountCreate1State extends State<NewAccountCreate1> {
               ),
               TextField(
                 onChanged: (val) {
-
-                  if (val.trim().isEmpty) {
+                  if (val
+                      .trim()
+                      .isEmpty) {
                     setState(() {
                       isButtonEnabled = false;
                     });
@@ -833,8 +905,7 @@ class _NewAccountCreate1State extends State<NewAccountCreate1> {
                   // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                   hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
                   hintText: "Enter your First Name",
-                  labelText: "First Name*",
-                  labelStyle: TextStyle(color: Colors.red)
+                  labelText: "First Name",
                   // errorText: phoneVal ? "Mobile Number is required":null,
                   // border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
                 ),
@@ -893,7 +964,8 @@ class _NewAccountCreate1State extends State<NewAccountCreate1> {
                   Navigator.push(context,
                       MaterialPageRoute(
                           builder: (context) =>
-                              NewAccountCreate2(
+                              distinictAccountCreate2(
+                                otp:widget.otp,
                                 personId:widget.personId,
                                 mobileno: widget.mobileno,
                                 email: widget.email,
@@ -914,7 +986,7 @@ class _NewAccountCreate1State extends State<NewAccountCreate1> {
   }
 }
 
-class NewAccountCreate2 extends StatefulWidget {
+class distinictAccountCreate2 extends StatefulWidget {
   final int personId;
   final int salution;
   final String first_name;
@@ -923,13 +995,13 @@ class NewAccountCreate2 extends StatefulWidget {
   final String alisas;
   final String mobileno;
   final String email;
-  const NewAccountCreate2({Key key,this.salution,this.first_name,this.middle_name,this.last_name,this.alisas,this.mobileno,this.email,this.personId}) : super(key: key);
+  final int otp;
+  const distinictAccountCreate2({Key key,this.salution,this.first_name,this.middle_name,this.last_name,this.alisas,this.mobileno,this.email,this.personId,this.otp}) : super(key: key);
   @override
-  _NewAccountCreate2State createState() => _NewAccountCreate2State();
+  _distinictAccountCreate2State createState() => _distinictAccountCreate2State();
 }
 
-class _NewAccountCreate2State extends State<NewAccountCreate2> {
-
+class _distinictAccountCreate2State extends State<distinictAccountCreate2> {
   List Gender;
   List BloodGroup;
   BottomLoader bl;
@@ -946,6 +1018,7 @@ class _NewAccountCreate2State extends State<NewAccountCreate2> {
     });
     var res = await Network().Mobile_NO_Check('/finddataByPersonId/$personid');
     var body = json.decode(res.body);
+
     if(body['status'] == 1){
       var result = body['data'];
 
@@ -967,7 +1040,6 @@ class _NewAccountCreate2State extends State<NewAccountCreate2> {
       return result;
     }
   }
-
   void OTP_send() async{
     bl = new BottomLoader(
       context,
@@ -990,7 +1062,7 @@ class _NewAccountCreate2State extends State<NewAccountCreate2> {
       'pPersonEmail':widget.email,
       'mobile_no':widget.mobileno
     };
-    print(data);
+
     var res = await Network().authData(data, '/createPersonTmpFile');
     var body = json.decode(res.body);
 
@@ -998,8 +1070,9 @@ class _NewAccountCreate2State extends State<NewAccountCreate2> {
       bl.close();
       Navigator.push(context,
           MaterialPageRoute(
-              builder: (context) => NewAccountCreateOTP(
-                personId :widget.personId,
+              builder: (context) => distnictAccountCreatePasswordSet(
+                  otp:widget.otp,
+                  personId :widget.personId,
                   mobileno:widget.mobileno,email:widget.email,
                   salution:widget.salution,first_name:widget.first_name,middle_name:widget.middle_name,last_name:widget.last_name,alisas:widget.alisas,gender:GenderId,Dob:DOB.text,bloodgroup:BloodGroupId
               )));
@@ -1013,14 +1086,12 @@ class _NewAccountCreate2State extends State<NewAccountCreate2> {
   @override
   void initState() {
     super.initState();
+    if(widget.personId != 0){
       get_data(widget.personId);
-      if(widget.personId != 0){
-        isButtonEnabled = true;
-      }
 
+    }
   }
   Widget build(BuildContext context) {
-
     if(_isLoading){
       return Scaffold(
         body: Container(
@@ -1083,8 +1154,8 @@ class _NewAccountCreate2State extends State<NewAccountCreate2> {
                 style: TextStyle(fontSize: 14),
                 decoration: InputDecoration(
                   hintText: 'Pick Date',
-                  labelText: 'DOB*',
-                  labelStyle: TextStyle(fontSize: 14.0,color: Colors.red),
+                  labelText: 'DOB',
+                  labelStyle: TextStyle(fontSize: 14.0),
                   hintStyle: TextStyle(fontSize: 14.0),
                   // suffixIcon: Icon(Icons.calendar_today_rounded,size: 18.0)
                 ),
@@ -1098,10 +1169,6 @@ class _NewAccountCreate2State extends State<NewAccountCreate2> {
                       lastDate: DateTime(2100)
                   );
                   DOB.text = date.toString().substring(0, 10);
-                  setState(() {
-                    isButtonEnabled = true;
-                  });
-
                 },),
               SizedBox(height: 20,),
               Align(
@@ -1144,9 +1211,17 @@ class _NewAccountCreate2State extends State<NewAccountCreate2> {
                     Text('Next', style: TextStyle(color: Colors.white,),),
                   ],
                 ),
-                onPressed: isButtonEnabled?() {
-                  OTP_send();
-                }:null,
+                onPressed: () {
+                  // OTP_send();
+                  Navigator.push(context,
+                      MaterialPageRoute(
+                          builder: (context) => distnictAccountCreatePasswordSet(
+                              otp:widget.otp,
+                              personId :widget.personId,
+                              mobileno:widget.mobileno,email:widget.email,
+                              salution:widget.salution,first_name:widget.first_name,middle_name:widget.middle_name,last_name:widget.last_name,alisas:widget.alisas,gender:GenderId,Dob:DOB.text,bloodgroup:BloodGroupId
+                          )));
+                },
               ),
             ],
           ),
@@ -1156,165 +1231,7 @@ class _NewAccountCreate2State extends State<NewAccountCreate2> {
   }
 }
 
-class NewAccountCreateOTP extends StatefulWidget {
-
-  final String mobileno;
-  final int personId;
-  final int salution;
-  final String first_name;
-  final String middle_name;
-  final String last_name;
-  final String alisas;
-  final int gender;
-  final String Dob;
-  final int bloodgroup;
-  final String email;
-  const NewAccountCreateOTP({Key key,this.mobileno,this.salution,this.first_name,this.middle_name,this.last_name,this.alisas,this.Dob,this.bloodgroup,this.gender,this.email,this.personId}) : super(key: key);
-  @override
-  _NewAccountCreateOTPState createState() => _NewAccountCreateOTPState();
-}
-
-class _NewAccountCreateOTPState extends State<NewAccountCreateOTP> {
-  final otp = new TextEditingController();
-  String Mobile_hashed;
-  bool otp_validate = false;
-  BottomLoader bl;
-
-
-  static getPayCardStr(String code) {
-    final int length = code.length;
-    final int replaceLength = length - 2;
-    final String replacement = List<String>.generate((replaceLength / 4).ceil(), (int _) => 'xxxx').join('');
-    return code.replaceRange(0, replaceLength, replacement);
-  }
-
-  @override
-  void initState() {
-    var number = getPayCardStr(widget.mobileno);
-    setState(() {
-      Mobile_hashed = number;
-    });
-  }
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        padding: EdgeInsets.only(left:25,right: 25),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            TextField(
-              onChanged:(val){
-
-                if (val.trim().isEmpty || val.length != 4){
-                  setState(() {
-                    otp_validate = false;
-                  });
-                }else{
-                  setState(() {
-                    otp_validate = true;
-                  });
-                }
-
-              },
-              textAlign: TextAlign.center,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                // labelText: 'Password',
-                hintText: "OTP Received on your Mobile $Mobile_hashed",
-                hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
-
-
-              ),
-              controller: otp,
-            ),
-            SizedBox(height: 20,),
-            RaisedButton(
-              color: Colors.orange,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  // Icon(Icons.direc,color: Colors.white),
-                  Text('Validate',style: TextStyle(color: Colors.white,),),
-                ],
-              ),
-              onPressed: otp_validate?(){
-                OTP_Validate();
-              }:null,
-            ),
-
-          ],
-        ),
-      ),
-    );
-  }
-  void OTP_Validate ()async{
-
-    bl = new BottomLoader(
-      context,
-      showLogs: true,
-      isDismissible: true,
-    );
-    bl.style(
-      message: 'Please wait...',
-    );
-    bl.display();
-
-    var data = {
-      'pId' : widget.personId != 0?widget.personId:false,
-      'first_name' : widget.first_name,
-      'middle_name':widget.middle_name,
-      'last_name':widget.last_name,
-      'alias':widget.alisas,
-      'dob':widget.Dob,
-      'gender_id':widget.gender,
-      'blood_group_id':widget.bloodgroup,
-      'salutation':widget.salution,
-      'otp':otp.text,
-      'email':widget.email,
-      'mobile_no':widget.mobileno,
-    };
-
-
-    var res = await Network().authData(data, '/SignUp');
-    var body = json.decode(res.body);
-
-
-    if(body['message'] == "SUCCESS") {
-
-
-      bl.close();
-      Navigator.push(
-        context,
-        new MaterialPageRoute(
-            builder: (context) => AccountCreatePasswordSet(
-              personId:body['data']['id'],
-                mobileno:widget.mobileno,email:widget.email,salution:widget.salution,first_name:widget.first_name,
-              middle_name:widget.middle_name,last_name:widget.last_name,alisas:widget.alisas,gender:widget.gender,Dob:widget.Dob,bloodgroup:widget.bloodgroup,
-              otp:otp.text
-            )
-        ),
-      );
-    }else{
-      bl.close();
-      Fluttertoast.showToast(
-          msg: "OTP is Invalid",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          // timeInSecForIos: 1,
-          backgroundColor: Colors.grey,
-          textColor: Colors.black
-      );
-    }
-  }
-
-
-}
-
-class AccountCreatePasswordSet extends StatefulWidget {
+class distnictAccountCreatePasswordSet extends StatefulWidget {
 
   final String mobileno;
   final int salution;
@@ -1327,13 +1244,13 @@ class AccountCreatePasswordSet extends StatefulWidget {
   final int bloodgroup;
   final int personId;
   final String email;
-  final String otp;
-  const AccountCreatePasswordSet({Key key,this.mobileno,this.salution,this.first_name,this.middle_name,this.last_name,this.alisas,this.Dob,this.bloodgroup,this.gender,this.email,this.otp,this.personId}) : super(key: key);
+  final int otp;
+  const distnictAccountCreatePasswordSet({Key key,this.mobileno,this.salution,this.first_name,this.middle_name,this.last_name,this.alisas,this.Dob,this.bloodgroup,this.gender,this.email,this.otp,this.personId}) : super(key: key);
   @override
-  _AccountCreatePasswordSetState createState() => _AccountCreatePasswordSetState();
+  _distnictAccountCreatePasswordSetState createState() => _distnictAccountCreatePasswordSetState();
 }
 
-class _AccountCreatePasswordSetState extends State<AccountCreatePasswordSet> {
+class _distnictAccountCreatePasswordSetState extends State<distnictAccountCreatePasswordSet> {
 
   final forgot_password = new TextEditingController();
   final conform_password = new TextEditingController();
@@ -1348,53 +1265,6 @@ class _AccountCreatePasswordSetState extends State<AccountCreatePasswordSet> {
   bool pwdmatch = false;
   BottomLoader bl;
 
-  // void update_password (userid,pwd,conform_pwd)async{
-  //
-  //   bl = new BottomLoader(
-  //     context,
-  //     showLogs: true,
-  //     isDismissible: true,
-  //   );
-  //   bl.style(
-  //     message: 'Please wait...',
-  //   );
-  //   bl.display();
-  //   var data = {
-  //     'userId' : userid,
-  //     'new_password' : pwd,
-  //     'new_confirm_password':conform_pwd
-  //   };
-  //   var res = await Network().authData(data, '/updatePassword');
-  //   var body = json.decode(res.body);
-  //   // if(body['message'] == "SUCCESS") {
-  //   //   bl.close();
-  //   //   Navigator.push(
-  //   //     context,
-  //   //     new MaterialPageRoute(
-  //   //         builder: (context) => LoginPageTwo()
-  //   //     ),
-  //   //   );
-  //   //   Fluttertoast.showToast(
-  //   //       msg: "Password has been Updated!!",
-  //   //       toastLength: Toast.LENGTH_SHORT,
-  //   //       gravity: ToastGravity.BOTTOM,
-  //   //       // timeInSecForIos: 1,
-  //   //       backgroundColor: Colors.grey,
-  //   //       textColor: Colors.black
-  //   //   );
-  //   //
-  //   // }else{
-  //   //   bl.close();
-  //   //   Fluttertoast.showToast(
-  //   //       msg: "Server error.Contact Admin",
-  //   //       toastLength: Toast.LENGTH_SHORT,
-  //   //       gravity: ToastGravity.BOTTOM,
-  //   //       // timeInSecForIos: 1,
-  //   //       backgroundColor: Colors.grey,
-  //   //       textColor: Colors.black
-  //   //   );
-  //   // }
-  // }
 
   void signup_and_signin() async{
 
@@ -1424,11 +1294,11 @@ class _AccountCreatePasswordSetState extends State<AccountCreatePasswordSet> {
       'mobile_no':widget.mobileno,
     };
 
-
+    print(data);
     var res = await Network().authData(data, '/SignUp');
 
     var body = json.decode(res.body);
-
+    print(body);
     if(body['status'] == 1){
 
       SharedPreferences localStorage = await SharedPreferences.getInstance();
@@ -1462,6 +1332,7 @@ class _AccountCreatePasswordSetState extends State<AccountCreatePasswordSet> {
   Widget build(BuildContext context) {
     TextStyle defaultStyle = TextStyle(color: Colors.grey);
     TextStyle linkStyle = TextStyle(color: Colors.blue);
+    print(widget.otp);
     return Scaffold(
       body: Container(
         padding: EdgeInsets.only(left:25,right: 25),
@@ -1566,89 +1437,40 @@ class _AccountCreatePasswordSetState extends State<AccountCreatePasswordSet> {
               visible: pwdmatch,
               child: RichText(
                 text: TextSpan(
-                style: defaultStyle,
-                children: <TextSpan>[
-              TextSpan(text: 'By clicking Sign Up, you agree to our '),
-              TextSpan(
-                  text: 'Term,',
-                  style: linkStyle,
-                  recognizer: TapGestureRecognizer()
-                    ..onTap = () {
-                      print('Terms of Service"');
-                    }),
-                  TextSpan(
-                      text: 'Data Policy',
-                      style: linkStyle,
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          print('Terms of Service"');
-                        }),
-              TextSpan(text: ' and  '),
-              TextSpan(
-                  text: 'Cookie Policy',
-                  style: linkStyle,
-                  recognizer: TapGestureRecognizer()
-                    ..onTap = () {
-                      print('Privacy Policy"');
-                    }),
-                  TextSpan(text: ' Also you agree to send and receive SMS and Email notification from us.'),
-          ],
-        ),
-      ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class Inconvenience extends StatefulWidget {
-  @override
-  _InconvenienceState createState() => _InconvenienceState();
-}
-
-class _InconvenienceState extends State<Inconvenience> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        padding: EdgeInsets.only(left:25,right: 25),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text("Ado unbox",style: TextStyle(color: Colors.orangeAccent,fontSize: 50.0,fontStyle: FontStyle.italic),),
-            SizedBox(height: 50.0,),
-            Align(alignment: Alignment.centerLeft,
-                child: Text("Sorry for the inconvenience caused, we need a unique mobile number owned by you to signup our system.")),
-            SizedBox(height: 50.0,),
-            RaisedButton(
-              color: Colors.orange,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  // Icon(Icons.direc,color: Colors.white),
-                  Text('Continue',style: TextStyle(color: Colors.white,),),
-                ],
+                  style: defaultStyle,
+                  children: <TextSpan>[
+                    TextSpan(text: 'By clicking Sign Up, you agree to our '),
+                    TextSpan(
+                        text: 'Term,',
+                        style: linkStyle,
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            print('Terms of Service"');
+                          }),
+                    TextSpan(
+                        text: 'Data Policy',
+                        style: linkStyle,
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            print('Terms of Service"');
+                          }),
+                    TextSpan(text: ' and  '),
+                    TextSpan(
+                        text: 'Cookie Policy',
+                        style: linkStyle,
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            print('Privacy Policy"');
+                          }),
+                    TextSpan(text: ' Also you agree to send and receive SMS and Email notification from us.'),
+                  ],
+                ),
               ),
-              onPressed: (){
+            )
 
-                Navigator.push(context,
-                    MaterialPageRoute(
-                        builder: (context) => LoginPage()));
-              },
-            ),
           ],
         ),
       ),
     );
   }
 }
-
-
-
-
-

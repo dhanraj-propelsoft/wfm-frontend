@@ -17,121 +17,147 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.grey[200],
+        backgroundColor: Colors.grey[350],
         title: Text("Profile",style: TextStyle(color: Colors.black),),
         leading: IconButton(icon: Icon(Icons.arrow_back,color: Colors.black,),onPressed: (){
           Navigator.of(context).pop();
         },),
       ),
-      body: Container(
-        padding: EdgeInsets.all(10.0),
+      body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.only(left: 10.0,right: 10.0),
-          child: Column(
-            children: [
-              Center(
-                child: CircleAvatar(
-                  radius: 60,
-                  backgroundImage: AssetImage('assets/splash_img.jpg'),
+          padding: EdgeInsets.all(10.0),
+          child: Container(
+            padding: EdgeInsets.only(left: 10.0,right: 10.0),
+            child: Column(
+              children: [
+                Center(
+                  child: CircleAvatar(
+                    radius: 60,
+                    backgroundImage: AssetImage('assets/splash_img.jpg'),
+                  ),
                 ),
-              ),
-              TextField(
-                onTap: () {
-                  name_update();
-                },
-                keyboardType: TextInputType.number,
-                obscureText: false,
-                decoration: InputDecoration(
-                  // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                  hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
-                  hintText: "Enter your Mobile",
-                  labelText: "Name",
+                TextField(
+                  onTap: () {
+                    Navigator.push(
+                            context,
+                            new MaterialPageRoute(
+                                builder: (context) => NameUpdate()
+                            ),
+                          );
+                  },
+                  keyboardType: TextInputType.number,
+                  obscureText: false,
+                  decoration: InputDecoration(
+                    // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                    hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
+                    hintText: "Enter your Name",
+                    labelText: "Name",
 
-                  // border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
+                    // border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
+                  ),
+                  controller: Name,
                 ),
-                controller: Name,
-              ),
-              TextField(
-                onTap: () {
-                  mobile_update();
-                },
-                keyboardType: TextInputType.number,
-                obscureText: false,
-                decoration: InputDecoration(
-                  // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                  hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
-                  hintText: "Enter your Mobile",
-                  labelText: "Mobile",
+                TextField(
+                  // onTap: () {
+                  //   mobile_update();
+                  // },
+                  keyboardType: TextInputType.number,
+                  obscureText: false,
+                  decoration: InputDecoration(
+                    // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                    hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
+                    hintText: "Enter your Mobile",
+                    labelText: "Mobile",
 
-                  // border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
+                    // border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
+                  ),
+                  controller: MobileNo,
                 ),
-                controller: MobileNo,
-              ),
-              TextField(
-                onTap: (){
-                  email_update();
-                },
-                keyboardType: TextInputType.number,
-                obscureText: false,
-                decoration: InputDecoration(
-                  // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                  hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
-                  hintText: "Enter your Email",
-                  labelText: "Email",
+                TextField(
+                  // onTap: (){
+                  //   email_update();
+                  // },
+                  // keyboardType: TextInputType.number,
+                  obscureText: false,
+                  decoration: InputDecoration(
+                    // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                    hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
+                    hintText: "Enter your Email",
+                    labelText: "Email",
 
-                  // border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
+                    // border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
+                  ),
+                  controller: Email,
                 ),
-                controller: Email,
-              ),
-              TextField(
-                onTap: (){
-                  dob_update();
-                },
-                keyboardType: TextInputType.number,
-                obscureText: false,
-                decoration: InputDecoration(
-                  // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                  hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
-                  hintText: "Enter your DOB",
-                  labelText: "DOB",
+                TextField(
+                  onTap: () async {
+                    // final DateTime now = DateTime.now();
+                    final DateFormat formatter = DateFormat('dd-MM-yyyy');
 
-                  // border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
-                ),
-                controller: DOB,
-              ),
-              TextField(
-                onTap: (){
-                  home_address_update();
-                },
-                keyboardType: TextInputType.number,
-                obscureText: false,
-                decoration: InputDecoration(
-                  // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                  hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
-                  hintText: "Enter your Address",
-                  labelText: "Home Address",
+                    var date =  await showDatePicker(
+                        context: context,
+                        initialDate:DateTime.now(),
+                        firstDate:DateTime(1900),
+                        lastDate: DateTime(2100)
+                    );
+                    DOB.text = date.toString().substring(0,10);
+                  },
+                  // keyboardType: TextInputType.number,
+                  obscureText: false,
+                  decoration: InputDecoration(
+                    // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                    hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
+                    hintText: "Enter your DOB",
+                    labelText: "DOB",
 
-                  // border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
+                    // border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
+                  ),
+                  controller: DOB,
                 ),
-                controller: HomeAddress,
-              ),
-              TextField(
-                onTap: (){
-                  home_address_update();
-                },
-                keyboardType: TextInputType.number,
-                obscureText: false,
-                decoration: InputDecoration(
-                  // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                  hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
-                  hintText: "Enter your Address",
-                  labelText: "Office Address",
+                TextField(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      new MaterialPageRoute(
+                          builder: (context) => AddressUpdate()
+                      ),
+                    );
+                  },
+                  // keyboardType: TextInputType.number,
+                  obscureText: false,
+                  decoration: InputDecoration(
+                    // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                    hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
+                    hintText: "Enter your Address",
+                    labelText: "Home Address",
 
-                  // border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
+                    // border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
+                  ),
+                  controller: HomeAddress,
                 ),
-                controller: OfficeAddress,
-              ),
-            ],
+                TextField(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      new MaterialPageRoute(
+                          builder: (context) => AddressUpdate()
+                      ),
+                    );
+                  },
+                  // keyboardType: TextInputType.number,
+                  obscureText: false,
+                  decoration: InputDecoration(
+                    // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                    hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
+                    hintText: "Enter your Address",
+                    labelText: "Office Address",
+
+                    // border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
+                  ),
+                  controller: OfficeAddress,
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -618,3 +644,522 @@ class _ProfileState extends State<Profile> {
   }
 
 }
+
+class NameUpdate extends StatefulWidget {
+  @override
+  _NameUpdateState createState() => _NameUpdateState();
+}
+
+class _NameUpdateState extends State<NameUpdate> {
+  final firstname = new TextEditingController();
+  final middlename = new TextEditingController();
+  final lastname = new TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    final double bottomsheet_height = MediaQuery.of(context).size.height * 0.10 - 50;
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.grey[350],
+        title: Text("Profile",style: TextStyle(color: Colors.black),),
+        leading: IconButton(icon: Icon(Icons.arrow_back,color: Colors.black,),onPressed: (){
+          Navigator.of(context).pop();
+        },),
+      ),
+      body: SingleChildScrollView(child:Container(
+        padding: EdgeInsets.only(left:25,right: 25,top: 25),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              // padding: EdgeInsets.only(left:15,right: 15),
+              height: 45.0,
+              child: TextField(
+                autofocus: true,
+                // onChanged:(val){
+                //
+                //   if (val.trim().isEmpty){
+                //     setState(() {
+                //       isCategoryNameVal = false;
+                //     });
+                //   }else{
+                //     setState(() {
+                //       isCategoryNameVal = true;
+                //     });
+                //   }
+                //
+                // },
+                decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(15.0),
+                      ),
+                    ),
+                    filled: true,
+                    hintStyle: new TextStyle(color: Colors.grey[600]),
+                    // hintText: "Boys Rings",
+                    labelText: "First Name",
+                    fillColor: Colors.white),
+                controller: firstname,
+              ),
+
+            ),
+            SizedBox(height: bottomsheet_height,),
+            Container(
+              // padding: EdgeInsets.only(left:15,right: 15),
+              height: 45.0,
+              child: TextField(
+                autofocus: true,
+                // onChanged:(val){
+                //
+                //   if (val.trim().isEmpty){
+                //     setState(() {
+                //       isCategoryNameVal = false;
+                //     });
+                //   }else{
+                //     setState(() {
+                //       isCategoryNameVal = true;
+                //     });
+                //   }
+                //
+                // },
+                decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(15.0),
+                      ),
+                    ),
+                    filled: true,
+                    hintStyle: new TextStyle(color: Colors.grey[600]),
+                    // hintText: "Boys Rings",
+                    labelText: "Middle Name",
+                    fillColor: Colors.white),
+                controller: middlename,
+              ),
+
+            ),
+            SizedBox(height: bottomsheet_height,),
+            Container(
+              // padding: EdgeInsets.only(left:15,right: 15),
+              height: 45.0,
+              child: TextField(
+                autofocus: true,
+                // onChanged:(val){
+                //
+                //   if (val.trim().isEmpty){
+                //     setState(() {
+                //       isCategoryNameVal = false;
+                //     });
+                //   }else{
+                //     setState(() {
+                //       isCategoryNameVal = true;
+                //     });
+                //   }
+                //
+                // },
+                decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(15.0),
+                      ),
+                    ),
+                    filled: true,
+                    hintStyle: new TextStyle(color: Colors.grey[600]),
+                    // hintText: "Boys Rings",
+                    labelText: "Last Name",
+                    fillColor: Colors.white),
+                controller: lastname,
+              ),
+
+            ),
+            SizedBox(height: bottomsheet_height,),
+            ButtonTheme(
+              height: 45.0,
+              child: RaisedButton(
+                // padding: EdgeInsets.all(50),
+                color: Colors.blue,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    // Icon(Icons.direc,color: Colors.white),
+                    Text('Update',style: TextStyle(color: Colors.white,fontSize: 15.0),),
+                  ],
+                ),
+                // onPressed:isCategoryNameVal?(){ print("enabled");}:null,
+              ),
+            ),
+          ],
+        ),
+      )),
+    );
+  }
+}
+
+
+class AddressUpdate extends StatefulWidget {
+  @override
+  _AddressUpdateState createState() => _AddressUpdateState();
+}
+
+class _AddressUpdateState extends State<AddressUpdate> {
+  final firstname = new TextEditingController();
+  final middlename = new TextEditingController();
+  final lastname = new TextEditingController();
+  @override
+  Widget build(BuildContext context) {
+    final double bottomsheet_height = MediaQuery.of(context).size.height * 0.10 - 50;
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.grey[350],
+        title: Text("Address",style: TextStyle(color: Colors.black),),
+        leading: IconButton(icon: Icon(Icons.arrow_back,color: Colors.black,),onPressed: (){
+          Navigator.of(context).pop();
+        },),
+      ),
+      body: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.only(left:25,right: 25,top: 25),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                // padding: EdgeInsets.only(left:15,right: 15),
+                height: 45.0,
+                child: TextField(
+                  keyboardType: TextInputType.multiline,
+                  maxLines: 30,
+                  // maxLength: 1000,
+                  autofocus: true,
+                  // onChanged:(val){
+                  //
+                  //   if (val.trim().isEmpty){
+                  //     setState(() {
+                  //       isCategoryNameVal = false;
+                  //     });
+                  //   }else{
+                  //     setState(() {
+                  //       isCategoryNameVal = true;
+                  //     });
+                  //   }
+                  //
+                  // },
+                  decoration: InputDecoration(
+                      // border: OutlineInputBorder(
+                      //   borderRadius: const BorderRadius.all(
+                      //     Radius.circular(15.0),
+                      //   ),
+                      // ),
+                      filled: true,
+                      hintStyle: new TextStyle(color: Colors.grey[600]),
+                      // hintText: "Boys Rings",
+                      labelText: "Address of",
+                      fillColor: Colors.white),
+                  controller: firstname,
+                ),
+
+              ),
+              SizedBox(height: bottomsheet_height,),
+              Container(
+                // padding: EdgeInsets.only(left:15,right: 15),
+                height: 45.0,
+                child: TextField(
+                  autofocus: true,
+                  // onChanged:(val){
+                  //
+                  //   if (val.trim().isEmpty){
+                  //     setState(() {
+                  //       isCategoryNameVal = false;
+                  //     });
+                  //   }else{
+                  //     setState(() {
+                  //       isCategoryNameVal = true;
+                  //     });
+                  //   }
+                  //
+                  // },
+                  decoration: InputDecoration(
+                      // border: OutlineInputBorder(
+                      //   borderRadius: const BorderRadius.all(
+                      //     Radius.circular(15.0),
+                      //   ),
+                      // ),
+                      filled: true,
+                      hintStyle: new TextStyle(color: Colors.grey[600]),
+                      // hintText: "Boys Rings",
+                      labelText: "Pin Code",
+                      fillColor: Colors.white),
+                  controller: middlename,
+                ),
+
+              ),
+              SizedBox(height: bottomsheet_height,),
+              Container(
+                // padding: EdgeInsets.only(left:15,right: 15),
+                height: 45.0,
+                child: TextField(
+                  autofocus: true,
+                  // onChanged:(val){
+                  //
+                  //   if (val.trim().isEmpty){
+                  //     setState(() {
+                  //       isCategoryNameVal = false;
+                  //     });
+                  //   }else{
+                  //     setState(() {
+                  //       isCategoryNameVal = true;
+                  //     });
+                  //   }
+                  //
+                  // },
+                  decoration: InputDecoration(
+                      // border: OutlineInputBorder(
+                      //   borderRadius: const BorderRadius.all(
+                      //     Radius.circular(15.0),
+                      //   ),
+                      // ),
+                      filled: true,
+                      hintStyle: new TextStyle(color: Colors.grey[600]),
+                      // hintText: "Boys Rings",
+                      labelText: "State",
+                      fillColor: Colors.white),
+                  controller: lastname,
+                ),
+
+              ),
+              SizedBox(height: bottomsheet_height,),
+              Container(
+                // padding: EdgeInsets.only(left:15,right: 15),
+                height: 45.0,
+                child: TextField(
+                  autofocus: true,
+                  // onChanged:(val){
+                  //
+                  //   if (val.trim().isEmpty){
+                  //     setState(() {
+                  //       isCategoryNameVal = false;
+                  //     });
+                  //   }else{
+                  //     setState(() {
+                  //       isCategoryNameVal = true;
+                  //     });
+                  //   }
+                  //
+                  // },
+                  decoration: InputDecoration(
+                      // border: OutlineInputBorder(
+                      //   borderRadius: const BorderRadius.all(
+                      //     Radius.circular(15.0),
+                      //   ),
+                      // ),
+                      filled: true,
+                      hintStyle: new TextStyle(color: Colors.grey[600]),
+                      // hintText: "Boys Rings",
+                      labelText: "City",
+                      fillColor: Colors.white),
+                  controller: lastname,
+                ),
+
+              ),
+              SizedBox(height: bottomsheet_height,),
+              Container(
+                // padding: EdgeInsets.only(left:15,right: 15),
+                height: 45.0,
+                child: TextField(
+                  autofocus: true,
+                  // onChanged:(val){
+                  //
+                  //   if (val.trim().isEmpty){
+                  //     setState(() {
+                  //       isCategoryNameVal = false;
+                  //     });
+                  //   }else{
+                  //     setState(() {
+                  //       isCategoryNameVal = true;
+                  //     });
+                  //   }
+                  //
+                  // },
+                  decoration: InputDecoration(
+                      // border: OutlineInputBorder(
+                      //   borderRadius: const BorderRadius.all(
+                      //     Radius.circular(15.0),
+                      //   ),
+                      // ),
+                      filled: true,
+                      hintStyle: new TextStyle(color: Colors.grey[600]),
+                      // hintText: "Boys Rings",
+                      labelText: "District",
+                      fillColor: Colors.white),
+                  controller: lastname,
+                ),
+
+              ),
+              SizedBox(height: bottomsheet_height,),
+              Container(
+                // padding: EdgeInsets.only(left:15,right: 15),
+                height: 45.0,
+                child: TextField(
+                  autofocus: true,
+                  // onChanged:(val){
+                  //
+                  //   if (val.trim().isEmpty){
+                  //     setState(() {
+                  //       isCategoryNameVal = false;
+                  //     });
+                  //   }else{
+                  //     setState(() {
+                  //       isCategoryNameVal = true;
+                  //     });
+                  //   }
+                  //
+                  // },
+                  decoration: InputDecoration(
+                      // border: OutlineInputBorder(
+                      //   borderRadius: const BorderRadius.all(
+                      //     Radius.circular(15.0),
+                      //   ),
+                      // ),
+                      filled: true,
+                      hintStyle: new TextStyle(color: Colors.grey[600]),
+                      // hintText: "Boys Rings",
+                      labelText: "Area",
+                      fillColor: Colors.white),
+                  controller: lastname,
+                ),
+
+              ),
+              SizedBox(height: bottomsheet_height,),
+              Container(
+                // padding: EdgeInsets.only(left:15,right: 15),
+                height: 45.0,
+                child: TextField(
+                  autofocus: true,
+                  // onChanged:(val){
+                  //
+                  //   if (val.trim().isEmpty){
+                  //     setState(() {
+                  //       isCategoryNameVal = false;
+                  //     });
+                  //   }else{
+                  //     setState(() {
+                  //       isCategoryNameVal = true;
+                  //     });
+                  //   }
+                  //
+                  // },
+                  decoration: InputDecoration(
+                      // border: OutlineInputBorder(
+                      //   borderRadius: const BorderRadius.all(
+                      //     Radius.circular(15.0),
+                      //   ),
+                      // ),
+                      filled: true,
+                      hintStyle: new TextStyle(color: Colors.grey[600]),
+                      // hintText: "Boys Rings",
+                      labelText: "Street",
+                      fillColor: Colors.white),
+                  controller: lastname,
+                ),
+
+              ),
+              SizedBox(height: bottomsheet_height,),
+              Container(
+                // padding: EdgeInsets.only(left:15,right: 15),
+                height: 45.0,
+                child: TextField(
+                  autofocus: true,
+                  // onChanged:(val){
+                  //
+                  //   if (val.trim().isEmpty){
+                  //     setState(() {
+                  //       isCategoryNameVal = false;
+                  //     });
+                  //   }else{
+                  //     setState(() {
+                  //       isCategoryNameVal = true;
+                  //     });
+                  //   }
+                  //
+                  // },
+                  decoration: InputDecoration(
+                      // border: OutlineInputBorder(
+                      //   borderRadius: const BorderRadius.all(
+                      //     Radius.circular(15.0),
+                      //   ),
+                      // ),
+                      filled: true,
+                      hintStyle: new TextStyle(color: Colors.grey[600]),
+                      // hintText: "Boys Rings",
+                      labelText: "Building Name",
+                      fillColor: Colors.white),
+                  controller: lastname,
+                ),
+
+              ),
+              SizedBox(height: bottomsheet_height,),
+              Container(
+                // padding: EdgeInsets.only(left:15,right: 15),
+                height: 45.0,
+                child: TextField(
+                  autofocus: true,
+                  // onChanged:(val){
+                  //
+                  //   if (val.trim().isEmpty){
+                  //     setState(() {
+                  //       isCategoryNameVal = false;
+                  //     });
+                  //   }else{
+                  //     setState(() {
+                  //       isCategoryNameVal = true;
+                  //     });
+                  //   }
+                  //
+                  // },
+                  decoration: InputDecoration(
+                      // border: OutlineInputBorder(
+                      //   borderRadius: const BorderRadius.all(
+                      //     Radius.circular(15.0),
+                      //   ),
+                      // ),
+                      filled: true,
+                      hintStyle: new TextStyle(color: Colors.grey[600]),
+                      // hintText: "Boys Rings",
+                      labelText: "Door No",
+                      fillColor: Colors.white),
+                  controller: lastname,
+                ),
+
+              ),
+              SizedBox(height: bottomsheet_height,),
+              ButtonTheme(
+                height: 45.0,
+                child: RaisedButton(
+                  // padding: EdgeInsets.all(50),
+                  color: Colors.blue,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      // Icon(Icons.direc,color: Colors.white),
+                      Text('Update',style: TextStyle(color: Colors.white,fontSize: 15.0),),
+                    ],
+                  ),
+                  // onPressed:isCategoryNameVal?(){ print("enabled");}:null,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+  }
+}
+

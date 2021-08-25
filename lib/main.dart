@@ -9,14 +9,24 @@ import 'package:propel/wfm/task/task_list.dart';
 import 'package:propel/auth/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:propel/wfm/masters/Project/add_project.dart';
-import 'package:propel/Settings/Home.dart';
+
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+
+  bool theme = true;
+
+  _getTheme() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    theme = localStorage.getBool('theme');
+
+  }
+
   @override
+
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Propel WFM',
@@ -27,13 +37,12 @@ class MyApp extends StatelessWidget {
       //   visualDensity: VisualDensity.adaptivePlatformDensity,
       // ),
       // theme: ThemeData.dark(),
-      theme: ThemeData.light(),
+      theme: theme?ThemeData.light():ThemeData.dark(),
       debugShowCheckedModeBanner: false,
       home: Splash2(),
       routes: <String,WidgetBuilder>{
         '/addTask':(BuildContext context)=>new AddTask(),
         '/addProject':(BuildContext context)=>new AddProject(),
-
       },
 
     );
@@ -50,7 +59,7 @@ class Splash2 extends StatelessWidget {
       image: Image(image: AssetImage('assets/splash_img.jpg')),
       loadingText: Text("Loading"),
       photoSize: 120.0,
-      loaderColor: Colors.blue,
+      loaderColor: Colors.orange,
     );
   }
 }
@@ -71,6 +80,7 @@ class _CheckAuthState extends State<CheckAuth> {
   void _checkIfLoggedIn() async{
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     var token = localStorage.getString('token');
+
     if(token != null){
       setState(() {
         isAuth = true;

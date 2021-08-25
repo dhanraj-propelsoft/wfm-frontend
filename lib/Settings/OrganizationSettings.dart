@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:propel/Settings/Profile.dart';
+
+
 class OrganizationSettings extends StatefulWidget {
   @override
   _OrganizationSettingsState createState() => _OrganizationSettingsState();
@@ -10,7 +13,7 @@ class _OrganizationSettingsState extends State<OrganizationSettings> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.grey[200],
+        backgroundColor: Colors.grey[350],
         title: Text("Organizations Settings",style: TextStyle(color: Colors.black),),
         leading: IconButton(icon: Icon(Icons.arrow_back,color: Colors.black,),onPressed: (){
           Navigator.of(context).pop();
@@ -34,18 +37,8 @@ class _OrganizationSettingsState extends State<OrganizationSettings> {
                     radius: 30,
                     backgroundImage: AssetImage('assets/splash_img.jpg'),
                   ),
-                  Column(
-                    children: [
-                      Align(
-                          alignment: Alignment.topLeft,
-                          child: Text("Nova P Felix")),
-                      Align(
-                          alignment: Alignment.topLeft,
-                          child: Text("9443447755")),
-                      Align(
-                          alignment: Alignment.topLeft,
-                          child: Text("felix@propelsoft.in"))
-                    ],
+                  Container(
+                    child: Text("Nova P Felix\n9443447755\nfelix@propelsoft.in"),
                   ),
                   Icon(Icons.arrow_forward_ios_sharp)
                 ],
@@ -64,12 +57,12 @@ class _OrganizationSettingsState extends State<OrganizationSettings> {
             ),
             Divider(),
             ListTile(
-              onTap: (){
-                Navigator.push(context,
-                    MaterialPageRoute(
-                        builder: (context) => OrganizationSettings(
-                        )));
-              },
+              // onTap: (){
+              //   Navigator.push(context,
+              //       MaterialPageRoute(
+              //           builder: (context) => OrganizationSettings(
+              //           )));
+              // },
               title: Text("Manage Organizations Account"),
               trailing: Icon(Icons.arrow_forward_ios_sharp),
             ),
@@ -116,81 +109,72 @@ class _OrganizationListState extends State<OrganizationList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.grey[200],
+        backgroundColor: Colors.grey[350],
         title: Text("Organizations",style: TextStyle(color: Colors.black),),
         leading: IconButton(icon: Icon(Icons.arrow_back,color: Colors.black,),onPressed: (){
           Navigator.of(context).pop();
         },),
       ),
-      body: Container(
-        padding: EdgeInsets.all(10.0),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              CircleAvatar(
-                radius: 30,
-                backgroundImage: AssetImage('assets/splash_img.jpg'),
-              ),
-              Column(
-                children: [
-                  Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text("Nova P Felix")),
-                  Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text("9443447755")),
-                  Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text("felix@propelsoft.in"))
-                ],
-              ),
-              Radio(value: 1, groupValue: prorityid, onChanged: _handleRadioValueChange),
-            ],
-          ),
-          Divider(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              CircleAvatar(
-                radius: 30,
-                backgroundImage: AssetImage('assets/splash_img.jpg'),
-              ),
-              Column(
-                children: [
-                  Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text("Nova P Felix")),
-                  Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text("9443447755")),
-                  Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text("felix@propelsoft.in"))
-                ],
-              ),
-              Radio(value: 2, groupValue: prorityid, onChanged: _handleRadioValueChange),
-            ],
-          ),
-          Divider(),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: RaisedButton(
-                        color: Colors.orange,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                        child: Row(
-                          children: <Widget>[
-                            Icon(Icons.add,color: Colors.white),
-                            Text('Add Organizations',style: TextStyle(color: Colors.white,),),
-                          ],
-                        ),
-                        onPressed: (){}
-                    ),
-          ),
-        ],
+      body: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.all(10.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                CircleAvatar(
+                  radius: 30,
+                  backgroundImage: AssetImage('assets/splash_img.jpg'),
+                ),
+                Container(
+                  child: Text("Nova P Felix\n9443447755\nfelix@propelsoft.in"),
+                ),
+                Radio(value: 1, groupValue: prorityid, onChanged: _handleRadioValueChange),
+              ],
+            ),
+            Divider(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                CircleAvatar(
+                  radius: 30,
+                  backgroundImage: AssetImage('assets/splash_img.jpg'),
+                ),
+                Container(
+                  child: Text("Nova P Felix\n9443447755\nfelix@propelsoft.in"),
+                ),
+                Radio(value: 2, groupValue: prorityid, onChanged: _handleRadioValueChange),
+              ],
+            ),
+            Divider(),
+            RaisedButton(
+                color: Colors.orange,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(Icons.add,color: Colors.white),
+                    Text('Add Organizations',style: TextStyle(color: Colors.white,),),
+                  ],
+                ),
+                onPressed: (){}
+            ),
+          ],
+        ),
+        ),
       ),
-      ),
+      // bottomNavigationBar: BottomAppBar(
+      //   child: ButtonBar(
+      //     alignment: MainAxisAlignment.center,
+      //     children: <Widget>[
+      //
+      //     ],
+      //   ),
+      // ),
     );
   }
 }
@@ -212,121 +196,198 @@ class _OrganizationProfileState extends State<OrganizationProfile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.grey[200],
-        title: Text("Profile",style: TextStyle(color: Colors.black),),
+        backgroundColor: Colors.grey[350],
+        title: Text("Organization Profile",style: TextStyle(color: Colors.black),),
         leading: IconButton(icon: Icon(Icons.arrow_back,color: Colors.black,),onPressed: (){
           Navigator.of(context).pop();
         },),
       ),
-      body: Container(
-        padding: EdgeInsets.all(10.0),
+      body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.only(left: 10.0,right: 10.0),
-          child: Column(
-            children: [
-              Center(
-                child: CircleAvatar(
-                  radius: 60,
-                  backgroundImage: AssetImage('assets/splash_img.jpg'),
+          padding: EdgeInsets.all(10.0),
+          child: Container(
+            padding: EdgeInsets.only(left: 10.0,right: 10.0),
+            child: Column(
+              children: [
+                Center(
+                  child: CircleAvatar(
+                    radius: 60,
+                    backgroundImage: AssetImage('assets/splash_img.jpg'),
+                  ),
                 ),
-              ),
-              TextField(
-                onTap: () {
-                  name_update();
-                },
-                keyboardType: TextInputType.number,
-                obscureText: false,
-                decoration: InputDecoration(
-                  // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                  hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
-                  hintText: "Enter your Mobile",
-                  labelText: "Name",
+                TextField(
+                  // onTap: () {
+                  //   name_update();
+                  // },
+                  keyboardType: TextInputType.number,
+                  obscureText: false,
+                  decoration: InputDecoration(
+                    // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                    hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
+                    hintText: "Enter your Organization Name",
+                    labelText: "Organization",
 
-                  // border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
+                    // border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
+                  ),
+                  controller: Name,
                 ),
-                controller: Name,
-              ),
-              TextField(
-                onTap: () {
-                  mobile_update();
-                },
-                keyboardType: TextInputType.number,
-                obscureText: false,
-                decoration: InputDecoration(
-                  // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                  hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
-                  hintText: "Enter your Mobile",
-                  labelText: "Mobile",
+                TextField(
+                  // onTap: () {
+                  //   mobile_update();
+                  // },
+                  keyboardType: TextInputType.number,
+                  obscureText: false,
+                  decoration: InputDecoration(
+                    // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                    hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
+                    hintText: "Enter your Organization Email",
+                    labelText: "Email",
 
-                  // border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
+                    // border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
+                  ),
+                  controller: MobileNo,
                 ),
-                controller: MobileNo,
-              ),
-              TextField(
-                onTap: (){
-                  email_update();
-                },
-                keyboardType: TextInputType.number,
-                obscureText: false,
-                decoration: InputDecoration(
-                  // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                  hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
-                  hintText: "Enter your Email",
-                  labelText: "Email",
+                TextField(
+                  // onTap: (){
+                  //   email_update();
+                  // },
+                  keyboardType: TextInputType.number,
+                  obscureText: false,
+                  decoration: InputDecoration(
+                    // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                    hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
+                    hintText: "Enter your Website",
+                    labelText: "Organization Website",
 
-                  // border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
+                    // border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
+                  ),
+                  controller: Email,
                 ),
-                controller: Email,
-              ),
-              TextField(
-                onTap: (){
-                  dob_update();
-                },
-                keyboardType: TextInputType.number,
-                obscureText: false,
-                decoration: InputDecoration(
-                  // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                  hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
-                  hintText: "Enter your DOB",
-                  labelText: "DOB",
+                TextField(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      new MaterialPageRoute(
+                          builder: (context) => AddressUpdate()
+                      ),
+                    );
+                  },
+                  keyboardType: TextInputType.number,
+                  obscureText: false,
+                  decoration: InputDecoration(
+                    // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                    hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
+                    // hintText: "Enter your Add",
+                    labelText: "Organization Address",
 
-                  // border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
+                    // border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
+                  ),
+                  controller: DOB,
                 ),
-                controller: DOB,
-              ),
-              TextField(
-                onTap: (){
-                  home_address_update();
-                },
-                keyboardType: TextInputType.number,
-                obscureText: false,
-                decoration: InputDecoration(
-                  // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                  hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
-                  hintText: "Enter your Address",
-                  labelText: "Home Address",
+                TextField(
+                  // onTap: (){
+                  //   home_address_update();
+                  // },
+                  keyboardType: TextInputType.number,
+                  obscureText: false,
+                  decoration: InputDecoration(
+                    // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                    hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
+                    hintText: "Enter your Mobile No",
+                    labelText: "Organization Contact No",
 
-                  // border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
+                    // border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
+                  ),
+                  controller: HomeAddress,
                 ),
-                controller: HomeAddress,
-              ),
-              TextField(
-                onTap: (){
-                  home_address_update();
-                },
-                keyboardType: TextInputType.number,
-                obscureText: false,
-                decoration: InputDecoration(
-                  // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                  hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
-                  hintText: "Enter your Address",
-                  labelText: "Office Address",
+                TextField(
+                  // onTap: (){
+                  //   home_address_update();
+                  // },
+                  keyboardType: TextInputType.number,
+                  obscureText: false,
+                  decoration: InputDecoration(
+                    // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                    hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
+                    hintText: "Enter your Working Hours",
+                    labelText: "Organization Working Hours",
 
-                  // border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
+                    // border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
+                  ),
+                  controller: OfficeAddress,
                 ),
-                controller: OfficeAddress,
-              ),
-            ],
+
+                TextField(
+                  // onTap: (){
+                  //   email_update();
+                  // },
+                  keyboardType: TextInputType.number,
+                  obscureText: false,
+                  decoration: InputDecoration(
+                    // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                    hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
+                    // hintText: "Enter your Website",
+                    labelText: "Organization Description",
+
+                    // border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
+                  ),
+                  controller: Email,
+                ),
+                TextField(
+                  // onTap: () {
+                  //   Navigator.push(
+                  //     context,
+                  //     new MaterialPageRoute(
+                  //         builder: (context) => AddressUpdate()
+                  //     ),
+                  //   );
+                  // },
+                  keyboardType: TextInputType.number,
+                  obscureText: false,
+                  decoration: InputDecoration(
+                    // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                    hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
+                    // hintText: "Enter your Add",
+                    labelText: "Organization Category",
+
+                    // border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
+                  ),
+                  controller: DOB,
+                ),
+                TextField(
+                  // onTap: (){
+                  //   home_address_update();
+                  // },
+                  keyboardType: TextInputType.number,
+                  obscureText: false,
+                  decoration: InputDecoration(
+                    // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                    hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
+                    // hintText: "Enter your Mobile No",
+                    labelText: "Organization ownership",
+
+                    // border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
+                  ),
+                  controller: HomeAddress,
+                ),
+                TextField(
+                  // onTap: (){
+                  //   home_address_update();
+                  // },
+                  keyboardType: TextInputType.number,
+                  obscureText: false,
+                  decoration: InputDecoration(
+                    // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                    hintStyle: TextStyle(fontSize: 15.0, color: Colors.grey),
+                    // hintText: "Enter your Working Hours",
+                    labelText: "Organization Administrators ",
+
+                    // border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
+                  ),
+                  controller: OfficeAddress,
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -812,3 +873,4 @@ class _OrganizationProfileState extends State<OrganizationProfile> {
         });
   }
 }
+

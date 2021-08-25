@@ -17,18 +17,53 @@ class _OrganizationsState extends State<Organizations> {
   bool frstorg = true;
   List switchList;
   Future myFuture;
+  int seletedOrg;
+  int OrganizationId;
+  bool firstorg = false;
+
+  get_orgId() async{
+    final prefs = await SharedPreferences.getInstance();
+    seletedOrg = prefs.getInt('orgid') ?? 0;
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var Data = jsonDecode(localStorage.getString('allData'));
+    if(seletedOrg == 0){
+      // if(Data['firstOrg'] == 0){
+      //   setState(() {
+      //     firstorg = false;
+      //   });
+      // }else{
+      //   setState(() {
+      //     firstorg = true;
+      //   });
+      // }
+      OrganizationId = Data['firstOrg'];
+
+    }else{
+      OrganizationId = seletedOrg;
+    }
+
+    if(OrganizationId != 0){
+      setState(() {
+        firstorg = true;
+      });
+    }
+
+    return OrganizationId;
+  }
 
   Future<List> orgData() async {
     var res = await Network().organizationsList('/user_companies');
     var body = json.decode(res.body);
 
-    if(body['status'] == 1){
-      var result = body['data'];
-      setState(() {
-        switchList = result;
-      });
-      return result;
-    }
+    return [];
+
+    // if(body['status'] == 1){
+    //   var result = body['data'];
+    //   setState(() {
+    //     switchList = result;
+    //   });
+    //   return result;
+    // }
   }
   Future<List> _selectorg(bool value,int orgid) async {
     bl = new BottomLoader(
@@ -184,7 +219,7 @@ class _OrganizationsState extends State<Organizations> {
                 child: Center(
                   child: AwesomeLoader(
                     loaderType: AwesomeLoader.AwesomeLoader3,
-                    // color: Colors.blue,
+                    color: Colors.orange,
                   ),
                 ),
               );
