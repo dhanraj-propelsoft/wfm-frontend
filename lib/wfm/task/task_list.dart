@@ -5,8 +5,6 @@ import 'dart:math';
 import 'package:propel/wfm/task/task_details.dart';
 import 'package:propel/network_utils/api.dart';
 import 'dart:convert';
-import 'package:propel/models/chat_users.dart';
-import 'package:propel/components/chat.dart';
 import 'package:awesome_loader/awesome_loader.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
@@ -65,7 +63,6 @@ class _TaskListState extends State<TaskList> {
 
   Future<List> taskData() async {
     final orgId = await get_orgId();
-    print(orgId);
     final prefs = await SharedPreferences.getInstance();
     unAssignedcategory = prefs.getBool('unAssignedcategory') == null?true:prefs.getBool('unAssignedcategory');
     unAssignedProject = prefs.getBool('unAssignedproject') == null?true:prefs.getBool('unAssignedproject');
@@ -73,6 +70,7 @@ class _TaskListState extends State<TaskList> {
 
     var body = json.decode(res.body);
     return [];
+    //after organizational unhide
     // if(body['status'] == 1){
     //   var result = body['data'];
     //   return result;
@@ -111,24 +109,7 @@ class _TaskListState extends State<TaskList> {
   }
   void myScroll() async {
 
-    // _scrollBottomBarController.addListener(() {
-    //   if (_scrollBottomBarController.position.userScrollDirection ==
-    //       ScrollDirection.reverse) {
-    //     if (!isScrollingDown) {
-    //       isScrollingDown = true;
-    //       _showAppbar = false;
-    //       hideBottomBar();
-    //     }
-    //   }
-    //   if (_scrollBottomBarController.position.userScrollDirection ==
-    //       ScrollDirection.forward) {
-    //     if (isScrollingDown) {
-    //       isScrollingDown = false;
-    //       _showAppbar = true;
-    //       showBottomBar();
-    //     }
-    //   }
-    // });
+
   }
   @override
   void initState() {
@@ -136,10 +117,7 @@ class _TaskListState extends State<TaskList> {
     myScroll();
     super.initState();
   }
-  void dispose() {
-    _scrollBottomBarController.removeListener(() {});
-    super.dispose();
-  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -168,15 +146,7 @@ class _TaskListState extends State<TaskList> {
                 return Scaffold(
                   body: SingleChildScrollView(
                     child: GestureDetector(
-                      // onTap: () {
-                      //
-                      //   Navigator.of(context).push(
-                      //       MaterialPageRoute(builder: (context) =>
-                      //           TaskDetails(
-                      //               id: snapshot.data[i]['pStartDate']
-                      //           )));
-                      //
-                      // },
+
                       child: Container(
                         padding: EdgeInsets.only(top: 05, right: 05),
                         child: Column(
@@ -186,7 +156,7 @@ class _TaskListState extends State<TaskList> {
                               key: Key('builder ${selected.toString()}'),
                               itemCount: snapshot.data.length,
                               shrinkWrap: true,
-                              // padding: EdgeInsets.only(top: 16),
+
                               physics: NeverScrollableScrollPhysics(),
                               itemBuilder: (context, i) {
 

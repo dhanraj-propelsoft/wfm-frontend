@@ -6,6 +6,7 @@ import 'package:awesome_loader/awesome_loader.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bottom_loader/bottom_loader.dart';
+
 class Organizations extends StatefulWidget {
   @override
   _OrganizationsState createState() => _OrganizationsState();
@@ -27,15 +28,6 @@ class _OrganizationsState extends State<Organizations> {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     var Data = jsonDecode(localStorage.getString('allData'));
     if(seletedOrg == 0){
-      // if(Data['firstOrg'] == 0){
-      //   setState(() {
-      //     firstorg = false;
-      //   });
-      // }else{
-      //   setState(() {
-      //     firstorg = true;
-      //   });
-      // }
       OrganizationId = Data['firstOrg'];
 
     }else{
@@ -56,7 +48,7 @@ class _OrganizationsState extends State<Organizations> {
     var body = json.decode(res.body);
 
     return [];
-
+    // after organization unhide
     // if(body['status'] == 1){
     //   var result = body['data'];
     //   setState(() {
@@ -82,16 +74,14 @@ class _OrganizationsState extends State<Organizations> {
 
     if(body['status'] == 1){
 
-      // obtain shared preferences
-      final prefs = await SharedPreferences.getInstance();
-      // set value
-      prefs.setInt('orgid', orgid);
 
+      final prefs = await SharedPreferences.getInstance();
+
+      prefs.setInt('orgid', orgid);
       Fluttertoast.showToast(
           msg: body['data']['name']+" is Actived",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
-          // timeInSecForIos: 1,
           backgroundColor: Colors.grey[200],
           textColor: Colors.black
       );
@@ -129,54 +119,9 @@ class _OrganizationsState extends State<Organizations> {
                       padding: EdgeInsets.only(top: 05, right: 05),
                       child: Column(
                         children: <Widget>[
-                          // Row(
-                          //   mainAxisAlignment: MainAxisAlignment.end,
-                          //   children: [
-                          //     Container(
-                          //       child: SizedBox(
-                          //         // width: 20.0,
-                          //         height: 30.0,
-                          //         child: RaisedButton(
-                          //             color: Colors.blue,
-                          //             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                          //             child: Row(
-                          //               children: <Widget>[
-                          //                 Icon(Icons.add,color: Colors.white),
-                          //                 Text('Add Organizations',style: TextStyle(color: Colors.white,),),
-                          //               ],
-                          //             ),
-                          //             onPressed: (){}
-                          //         ),
-                          //       ),
-                          //     ),
-                          //   ],
-                          // ),
-                          // Divider(),
-                          // Container(
-                          //   padding: EdgeInsets.only(left: 50),
-                          //   child: ListTile(
-                          //     title: Text("Select All"),
-                          //     trailing: Container(
-                          //         width: 60,
-                          //         child: Switch(
-                          //           value: isSwitched,
-                          //           // onChanged: (bool value) {
-                          //           //   setState(() {
-                          //           //     isSwitched = value;
-                          //           //   });
-                          //           // },
-                          //           activeColor: Colors.white,
-                          //           activeTrackColor: Colors.green,
-                          //           inactiveThumbColor: Colors.white,
-                          //           inactiveTrackColor: Colors.red,
-                          //         )
-                          //     ),
-                          //   ),
-                          // ),
                           ListView.builder(
                             itemCount: snapshot.data.length,
                             shrinkWrap: true,
-                            // padding: EdgeInsets.only(top: 16),
                             physics: NeverScrollableScrollPhysics(),
                             itemBuilder: (context, i) {
                               return ListTile(
@@ -196,7 +141,6 @@ class _OrganizationsState extends State<Organizations> {
                                           '1' ? true : false,
                                       onChanged: (bool value) => _selectorg(
                                           value, snapshot.data[i]['id']),
-                                      // onChanged: (bool Value){},
                                       activeColor: Colors.white,
                                       activeTrackColor: Colors.green,
                                       inactiveThumbColor: Colors.white,
