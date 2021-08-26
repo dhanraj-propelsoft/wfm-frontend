@@ -9,7 +9,6 @@ import 'package:propel/network_utils/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:propel/main.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'dart:io';
 import 'package:bottom_loader/bottom_loader.dart';
 import 'package:propel/Settings/Home.dart';
 
@@ -79,8 +78,8 @@ class _MainPageState extends State<MainPage> {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     var user = jsonDecode(localStorage.getString('user'));
     var Data = jsonDecode(localStorage.getString('allData'));
-    print("firstorg");
-    print(Data['firstOrg']);
+
+
     if(Data['firstOrg'] == 0){
       setState(() {
         firstOrg = false;
@@ -111,20 +110,7 @@ class _MainPageState extends State<MainPage> {
   );
   @override
 
-  // List<Widget> Containers = [
-  //   Container(
-  //     child: Organizations()
-  //   ),
-  //   Container(
-  //     child: category(),
-  //   ),
-  //   Container(
-  //     child: project(),
-  //   ),
-  //   Container(
-  //     child: ChatPage(),
-  //   ),
-  // ];
+
   Widget build(BuildContext context) {
 
     return DefaultTabController(
@@ -266,82 +252,5 @@ class _MainPageState extends State<MainPage> {
   }
 }
 
-// class MainPage extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//       leading: IconButton(
-//         icon: Icon(Icons.menu),
-//         onPressed: (){
-//         },
-//       ),
-//         title: Text('Propel'),
-//         actions: <Widget>[
-//           IconButton(
-//               icon: Icon(Icons.search),
-//             onPressed: (){
-//             },
-//           ),
-//           IconButton(
-//             icon: Icon(Icons.more_vert),
-//             onPressed: (){
-//             },
-//           )
-//         ],
-//       ),
-//       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-//       floatingActionButton: FloatingActionButton(
-//         child: Icon(Icons.add),
-//         backgroundColor: Colors.blue,
-//         onPressed: () {
-//
-//         },
-//       ),
-//       drawer: Drawer(
-//         elevation: 16.0,
-//         child: Column(
-//           children: <Widget>[
-//             UserAccountsDrawerHeader
-//               (accountName: Text("Ajith"),
-//                 accountEmail: Text("kajithaji98@gmail.com"),
-//               currentAccountPicture: CircleAvatar(
-//                 child: Text("A",style: new TextStyle(
-//                   fontSize: 40.0,
-//                   // color: Colors.yellow,
-//                 ),),
-//                 backgroundColor: Colors.lightBlue[50],
-//                 maxRadius: 30,
-//               ),
-//               )
-//           ],
-//         ),
-//       ),
-//       // bottomNavigationBar: BottomNavigationBar(
-//       //   selectedItemColor: Colors.pink,
-//       //   unselectedItemColor: Colors.grey.shade400,
-//       //   selectedLabelStyle: TextStyle(fontWeight: FontWeight.w600),
-//       //   unselectedLabelStyle: TextStyle(fontWeight: FontWeight.w600),
-//       //   type: BottomNavigationBarType.fixed,
-//       //   items: [
-//       //     BottomNavigationBarItem(
-//       //       icon: Icon(Icons.calendar_today_rounded),
-//       //       title: Text("Task"),
-//       //     ),
-//       //     BottomNavigationBarItem(
-//       //       icon: Icon(Icons.work),
-//       //       title: Text("Project"),
-//       //
-//       //     ),
-//       //     BottomNavigationBarItem(
-//       //       icon: Icon(Icons.settings),
-//       //       title: Text("Setting"),
-//       //     ),
-//       //   ],
-//       // ),
-//       // body: ChatPage(),
-//     );
-//   }
-// }
 
 
