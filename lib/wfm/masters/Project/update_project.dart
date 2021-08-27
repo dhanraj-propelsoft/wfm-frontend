@@ -175,13 +175,13 @@ class _UpdateProjectState extends State<UpdateProject> {
                     obscureText: false,
                     // maxLines: 3,
                     decoration: InputDecoration(
-                      // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+
                       hintText: "Enter Project Name",
                       labelText: "Name",
                       labelStyle: TextStyle(fontSize: 14.0),
                       hintStyle: TextStyle(fontSize: 14.0),
                       errorText: _valName ? "Name is required" : null,
-                      // border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0))
+
                     ),
                     controller: Name,
 
@@ -194,19 +194,19 @@ class _UpdateProjectState extends State<UpdateProject> {
                     obscureText: false,
                     // maxLines: 3,
                     decoration: InputDecoration(
-                      // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+
                       hintText: "Enter the Project Details",
                       labelText: "Details",
                       labelStyle: TextStyle(fontSize: 14.0),
                       hintStyle: TextStyle(fontSize: 14.0),
-                      // border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0))
+
                     ),
                     controller: Details,
                   ),
 
                 ),
                 Container(
-                  // padding: EdgeInsets.only(left:15,right: 15),
+
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -215,12 +215,7 @@ class _UpdateProjectState extends State<UpdateProject> {
                             alignedDropdown: true,
                             child: DropdownButton(
                               value: seletedemployee,
-                              // iconSize: 30,
-                              // icon: (null),
-                              // style: TextStyle(
-                              //   color: Colors.black54,
-                              //   fontSize: 16,
-                              // ),
+
                               hint: Text('Project Owner'),
                               items: employeeList?.map((item) {
                                 return new DropdownMenuItem(
@@ -244,12 +239,7 @@ class _UpdateProjectState extends State<UpdateProject> {
                             alignedDropdown: true,
                             child: DropdownButton(
                               value: seletedcategory,
-                              // iconSize: 30,
-                              // icon: (null),
-                              // style: TextStyle(
-                              //   color: Colors.black54,
-                              //   fontSize: 16,
-                              // ),
+
                               hint: Text('UnAssigned Category'),
                               items: categoryList?.map((item) {
                                 return new DropdownMenuItem(
@@ -335,21 +325,7 @@ class _UpdateProjectState extends State<UpdateProject> {
                       ],
                     )
                 ),
-                // Container(
-                //   padding: EdgeInsets.only(left: 15, right: 15),
-                //   child: TextField(
-                //     obscureText: false,
-                //     decoration: InputDecoration(
-                //       // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                //       //   hintText: "Attachment",
-                //         suffixIcon: Icon(Icons.attach_file)
-                //       // border:
-                //       // OutlineInputBorder(borderRadius: BorderRadius.circular(10.0))
-                //     ),
-                //
-                //   ),
-                //
-                // ),
+
                 SizedBox(
                   height: 50,
                 ),

@@ -4,12 +4,8 @@ import 'package:propel/network_utils/api.dart';
 import 'package:awesome_loader/awesome_loader.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:propel/modules/chat_details_page.dart';
 import 'dart:math';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:multiselect_formfield/multiselect_formfield.dart';
-import 'package:propel/components/chat_bubble.dart';
 import 'package:intl/intl.dart';
 
 class TaskDetails extends StatefulWidget {
@@ -18,15 +14,7 @@ class TaskDetails extends StatefulWidget {
   @override
   _TaskDetailsState createState() => _TaskDetailsState();
 }
-// enum MessageType{
-//   Sender,
-//   Receiver,
-// }
-// class ChatMessage{
-//   String message;
-//   MessageType type;
-//   ChatMessage({@required this.message,@required this.type});
-// }
+
 class CompanyWidget {
   const CompanyWidget(this.id,this.name);
   final String name;
@@ -54,63 +42,7 @@ class _TaskDetailsState extends State<TaskDetails> {
     List<CompanyWidget> _companies = [];
     List<int> _filters = [];
 
-   // Future myFuture;
-  // List<ChatMessage> chatMessage = [
-  //   ChatMessage(message: "Hi John", type: MessageType.Receiver),
-  //   ChatMessage(message: "Hope you are doin good", type: MessageType.Receiver),
-  //   ChatMessage(message: "Hello Jane, I'm good what about you", type: MessageType.Sender),
-  //   ChatMessage(message: "I'm fine, Working from home", type: MessageType.Receiver),
-  //   ChatMessage(message: "Oh! Nice. Same here man", type: MessageType.Sender),
-  //   ChatMessage(message: "Hi John", type: MessageType.Receiver),
-  //   ChatMessage(message: "Hope you are doin good", type: MessageType.Receiver),
-  //   ChatMessage(message: "Hello Jane, I'm good what about you", type: MessageType.Sender),
-  //   ChatMessage(message: "I'm fine, Working from home", type: MessageType.Receiver),
-  //   ChatMessage(message: "Oh! Nice. Same here man", type: MessageType.Sender),
-  // ];
-  // List<CompanyWidget> _companies = [
-  //   CompanyWidget(4, "Director"),
-  //   CompanyWidget(6, "Manager"),
-  //   CompanyWidget(5, "ASbn"),
-  //   CompanyWidget(3, "TWW"),
-  //   CompanyWidget(2, "WGE"),
-  //   CompanyWidget(1, "HW")
-  // ];
-  // final Name = new TextEditingController();
-  // final Details = new TextEditingController();
-  // final CreateddateController = TextEditingController();
-  // final DuedateController = TextEditingController();
-  // ScrollController _scrollController = new ScrollController();
-  // int prority = 2;
-  // List projectList;
-  // int seletedproject;
-  // List categoryList;
-  // int seletedcategory;
-  // List selectActions = [{'id':1,"name":"new"},{'id':2,"name":"open"}];
-  // List FollowerList = [{"person_id" : 3302,"first_name":"Ajith"},
-  //   {"person_id" : 3303,"first_name":"Vijay"},{"person_id" : 3304,"first_name":"Surya"}];
-  // List selectedfollower = [3302,3303];
-  // List<int> _filters = [];
-  //
-  //
-  // bool _pinned = true;
-  // bool _snap = false;
-  // bool _floating = false;
 
-    // Future<List> follower_update(bool selected,int follower_id) async {
-    //     setState(() {
-    //       if (selected) {
-    //         _filters.add(follower_id);
-    //
-    //       } else {
-    //         _filters.removeWhere((int id) {
-    //           return id == follower_id;
-    //         });
-    //       }
-    //     });
-    //     var data = {'task_id':widget.id,'follower_id':_filters};
-    //     var res = await Network().ProjectStore(data, '/taskfollowerupdate');
-    //
-    // }
 
     Future<List> follower_update(value) async {
 
@@ -257,24 +189,9 @@ class _TaskDetailsState extends State<TaskDetails> {
 
   void initState() {
     super.initState();
-    // taskDetails();
+
     myFuture = taskDetails();
-    // myFuture = taskDetails();
-    // var now = new DateTime.now();
-    // var formatter = new DateFormat('yyyy-MM-dd');
-    // String todayDate = formatter.format(now);
-    // _filters = <int>[4];
-    //
-    // setState(() {
-    //   Name.text = "Task Name";
-    //   Details.text = "Task Details";
-    //   CreateddateController.text = todayDate;
-    //   DuedateController.text = todayDate;
-    // });
-    // _taskData();
-    // print(replytile);
-    // replytile.removeWhere((item) => item['id'] == '001');
-    // print(replytile);
+
 
   }
   Widget build(BuildContext context) {
@@ -733,39 +650,7 @@ class _TaskDetailsState extends State<TaskDetails> {
        );
 
   }
-  // Iterable<Widget> get companyPosition sync* {
-  //   for (CompanyWidget company in _companies) {
-  //
-  //     yield Padding(
-  //       padding: const EdgeInsets.all(6.0),
-  //       child: FilterChip(
-  //         // backgroundColor: Colors.tealAccent[200],
-  //         avatar: CircleAvatar(
-  //           backgroundColor: Colors.grey,
-  //           child: Text(company.name[0].toUpperCase(),style: TextStyle(color: Colors.white),),
-  //         ),
-  //         label: Text(company.name,),
-  //         selected: _filters.contains(company.id),
-  //         // selected: company.id,
-  //         selectedColor: Colors.orange,
-  //         // onSelected: (bool selected) {
-  //         //
-  //         //   setState(() {
-  //         //     if (selected) {
-  //         //       _filters.add(company.id);
-  //         //
-  //         //     } else {
-  //         //       _filters.removeWhere((int id) {
-  //         //         return id == company.id;
-  //         //       });
-  //         //     }
-  //         //   });
-  //         // },
-  //         onSelected: (bool value)=>follower_update(value,company.id),
-  //       ),
-  //     );
-  //   }
-  // }
+
 
 }
 
@@ -790,11 +675,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
             color: Colors.transparent,
             margin: EdgeInsets.fromLTRB(35, 02, 0, 02),
             child: TextField(
-              //this is the TextField
-              // style: TextStyle(
-              //   fontSize: 30,
-              //   fontFamily: 'Karla',
-              // ),
+
               decoration: InputDecoration(
                 prefixIcon: const Icon(
                   Icons.textsms,
@@ -823,55 +704,5 @@ class _BottomNavBarState extends State<BottomNavBar> {
     );
   }
 }
-
-
-// class Conversation extends StatefulWidget {
-//   @override
-//   _ConversationState createState() => _ConversationState();
-// }
-//
-// class _ConversationState extends State<Conversation> {
-//   List<ChatMessage> chatMessage = [
-//     ChatMessage(message: "Hi John", type: MessageType.Receiver),
-//     ChatMessage(message: "Hope you are doin good", type: MessageType.Receiver),
-//     ChatMessage(message: "Hello Jane, I'm good what about you", type: MessageType.Sender),
-//     ChatMessage(message: "I'm fine, Working from home", type: MessageType.Receiver),
-//     // ChatMessage(message: "Oh! Nice. Same here man", type: MessageType.Sender),
-//     // ChatMessage(message: "Hi John", type: MessageType.Receiver),
-//     // ChatMessage(message: "Hope you are doin good", type: MessageType.Receiver),
-//     // ChatMessage(message: "Hello Jane, I'm good what about you", type: MessageType.Sender),
-//     // ChatMessage(message: "I'm fine, Working from home", type: MessageType.Receiver),
-//     // ChatMessage(message: "Oh! Nice. Same here man", type: MessageType.Sender),
-//   ];
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: SingleChildScrollView(
-//         child: ListView.builder(
-//           itemCount: chatMessage.length,
-//           shrinkWrap: true,
-//           padding: EdgeInsets.only(top: 10,bottom: 10),
-//           physics: NeverScrollableScrollPhysics(),
-//           itemBuilder: (context, i){
-//             return Container(
-//               padding: EdgeInsets.only(left: 16,right: 16,top: 10,bottom: 10),
-//               child: Align(
-//                 alignment: (chatMessage[i].type == MessageType.Receiver?Alignment.topLeft:Alignment.topRight),
-//                 child: Container(
-//                   decoration: BoxDecoration(
-//                     borderRadius: BorderRadius.circular(20),
-//                     color: (chatMessage[i].type  == MessageType.Receiver?Colors.white:Colors.grey.shade200),
-//                   ),
-//                   padding: EdgeInsets.all(16),
-//                   child: Text(chatMessage[i].message),
-//                 ),
-//               ),
-//             );
-//           },
-//         ),
-//       ),
-//     );
-//   }
-// }
 
 

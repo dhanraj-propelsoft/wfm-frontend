@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:propel/network_utils/api.dart';
 import 'package:propel/main_page.dart';
 import 'package:awesome_loader/awesome_loader.dart';
@@ -30,35 +29,9 @@ class _UpdateCategoryState extends State<UpdateCategory> {
   int seletedOrg;
   int OrganizationId;
 
-  Widget setUpButtonChild() {
-    if (_state == 0) {
-      return new Text(
-        "Click Here",
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 16.0,
-        ),
-      );
-    } else if (_state == 1) {
-      return CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-      );
-    } else {
-      return Icon(Icons.check, color: Colors.white);
-    }
-  }
 
-  void animateButton() {
-    setState(() {
-      _state = 1;
-    });
 
-    Timer(Duration(milliseconds: 3300), () {
-      setState(() {
-        _state = 2;
-      });
-    });
-  }
+
   get_orgId() async{
     final prefs = await SharedPreferences.getInstance();
     seletedOrg = prefs.getInt('orgid') ?? 0;
@@ -104,6 +77,7 @@ class _UpdateCategoryState extends State<UpdateCategory> {
     txtName.text = widget.name;
     super.initState();
   }
+
   Widget build(BuildContext context) {
     if(_isLoading){
       return Scaffold(
@@ -160,20 +134,6 @@ class _UpdateCategoryState extends State<UpdateCategory> {
                           categoryUpdate(txtName.text);
                         }:null
                     ),
-                    // MaterialButton(
-                    //   child: setUpButtonChild(),
-                    //   onPressed: () {
-                    //     setState(() {
-                    //       if (_state == 0) {
-                    //         animateButton();
-                    //       }
-                    //     });
-                    //   },
-                    //   elevation: 4.0,
-                    //   minWidth: double.infinity,
-                    //   height: 48.0,
-                    //   color: Colors.lightGreen,
-                    // )
                   ]
 
 

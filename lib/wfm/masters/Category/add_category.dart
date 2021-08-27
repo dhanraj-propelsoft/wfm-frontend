@@ -2,8 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:propel/network_utils/api.dart';
 import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:propel/wfm/masters/Category/category.dart';
 import 'package:propel/main_page.dart';
 import 'package:awesome_loader/awesome_loader.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -31,21 +29,7 @@ class _AddCategoryState extends State<AddCategory> {
     OrganizationId = seletedOrg == 0?Data['firstOrg']:seletedOrg;
     return OrganizationId;
   }
-  // void showToast() {
-  //   Fluttertoast.showToast(
-  //       msg: 'This is toast notification',
-  //       toastLength: Toast.LENGTH_SHORT,
-  //       gravity: ToastGravity.BOTTOM,
-  //       timeInSecForIos: 1,
-  //       backgroundColor: Colors.red,
-  //       textColor: Colors.yellow
-  //   );
-  // }
-  // Future _saveDetails(String name) async{
-  //   var url = "http://127.0.0.1:8000/api/users_store";
-  //   final response = await http.post(url,body: { "name" : name,"email":email});
-  //   Navigator.pushNamed(context, '/');
-  // }
+
 
   Future categorySave(String name) async {
     setState(() {
@@ -71,7 +55,6 @@ class _AddCategoryState extends State<AddCategory> {
           msg: "this Category name is already exist",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
-          // timeInSecForIos: 1,
           backgroundColor: Colors.grey[200],
           textColor: Colors.black
       );
@@ -131,18 +114,10 @@ class _AddCategoryState extends State<AddCategory> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       color: Colors.green,
                       child: Text('Save'),
-                      // onPressed: () {
+
                       onPressed:isButtonEnabled?(){
                         categorySave(txtName.text);
                       }:null
-                        // setState(() {
-                        //   txtName.text.isEmpty ? _valName = true : _valName =
-                        //   false;
-                        //   if (_valName == false) {
-                        //     categorySave(txtName.text);
-                        //   }
-                        // });
-                      // },
                     ),
                   ]
 

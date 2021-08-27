@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:propel/network_utils/api.dart';
 import 'dart:convert';
 import 'package:propel/wfm/masters/Project/add_project.dart';
-import 'package:propel/wfm/masters/Project/add_project.dart';
 import 'package:propel/wfm/masters/Project/update_project.dart';
 import 'package:awesome_loader/awesome_loader.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -24,7 +23,6 @@ class _projectState extends State<project> {
   int OrganizationId;
   bool unAssignedcategory;
   bool firstorg = false;
-
   bool unAssignedProject = true;
 
 
@@ -52,16 +50,17 @@ class _projectState extends State<project> {
     final orgId = await get_orgId();
     var res = await Network().projectList('/projectList/$orgId');
     var body = json.decode(res.body);
-    print(body);
-    if(body['status'] == 1){
-      var result = body['data'];
-      setState(() {
-        isSwitched = body['selectall'];
-        switchList = result;
-        // unAssignedProject = prefs.getBool('unAssignedproject') == null?true:prefs.getBool('unAssignedproject');
-      });
-      return result;
-    }
+
+      return [];
+    //  after organizations hide
+    // if(body['status'] == 1){
+    //   var result = body['data'];
+    //   setState(() {
+    //     isSwitched = body['selectall'];
+    //     switchList = result;
+    //   });
+    //   return result;
+    // }
   }
 
   Future<List> _onchanged(bool value,int index,int id) async {
@@ -84,7 +83,7 @@ class _projectState extends State<project> {
           msg: body['data'],
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
-          // timeInSecForIos: 1,
+
           backgroundColor: Colors.grey[200],
           textColor: Colors.black
       );
@@ -114,7 +113,7 @@ class _projectState extends State<project> {
           msg: body['data'],
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
-          // timeInSecForIos: 1,
+
           backgroundColor: Colors.grey[200],
           textColor: Colors.black
       );
@@ -127,18 +126,6 @@ class _projectState extends State<project> {
 
   }
 
-  Future<List> _unAssigned(bool value) async {
-
-    setState(() {
-      unAssignedProject = value;
-    });
-
-    // obtain shared preferences
-    final prefs = await SharedPreferences.getInstance();
-    // set value
-    prefs.setBool('unAssignedproject', unAssignedProject);
-
-  }
 
   @override
   void initState() {
@@ -257,24 +244,6 @@ class _projectState extends State<project> {
                               ),
                             ),
                           ),
-                          // Container(
-                          //   // padding: EdgeInsets.only(left: 50),
-                          //   child: ListTile(
-                          //     title: Text("UnAssigned Project"),
-                          //     trailing: Container(
-                          //         width: 60,
-                          //         child: Switch(
-                          //           value: unAssignedProject,
-                          //           onChanged : (bool expanding) => _unAssigned(expanding),
-                          //           activeColor: Colors.white,
-                          //           activeTrackColor: Colors.green,
-                          //           inactiveThumbColor: Colors.white,
-                          //           inactiveTrackColor: Colors.red,
-                          //         )
-                          //     ),
-                          //   ),
-                          // ),
-                          // Divider(),
                           Expanded(
                             child: SingleChildScrollView(
                               child: ListView.builder(
@@ -333,102 +302,3 @@ class _projectState extends State<project> {
   }
 }
 
-// class ItemList extends StatefulWidget {
-//   List list;
-//   ItemList({key,this.list}) : super(key:key);
-//   @override
-//   _ItemListState createState() => _ItemListState(list);
-// }
-//
-// class _ItemListState extends State<ItemList> {
-//   bool isSwitched = false;
-//   List list;
-//   _ItemListState(this. list);
-//   @override
-//
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: SingleChildScrollView(
-//         child: Container(
-//           padding: EdgeInsets.only(top:05,right: 05),
-//           child: Column(
-//             children: <Widget>[
-//               Row(
-//                 mainAxisAlignment: MainAxisAlignment.end,
-//                 children: [
-//                   Container(
-//                     child: SizedBox(
-//                       // width: 20.0,
-//                       height: 30.0,
-//                       child: RaisedButton(
-//                           color: Colors.blue,
-//                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-//                           child: Row(
-//                             children: <Widget>[
-//                               Icon(Icons.add,color: Colors.white),
-//                               Text('Add Project',style: TextStyle(color: Colors.white,),),
-//                             ],
-//                           ),
-//                           onPressed: (){}
-//                       ),
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//               Divider(),
-//               Container(
-//                 // padding: EdgeInsets.only(left: 50),
-//                 child: ListTile(
-//                   title: Text("Select All"),
-//                   trailing: Container(
-//                       width: 60,
-//                       child: Switch(
-//                         value: isSwitched,
-//                         onChanged: (bool value) {
-//                           setState(() {
-//                             isSwitched = value;
-//                           });
-//                         },
-//                         activeColor: Colors.white,
-//                         activeTrackColor: Colors.green,
-//                         inactiveThumbColor: Colors.white,
-//                         inactiveTrackColor: Colors.red,
-//                       )
-//                   ),
-//                 ),
-//               ),
-//               ListView.builder(
-//                 itemCount: list.length,
-//                 shrinkWrap: true,
-//                 // padding: EdgeInsets.only(top: 16),
-//                 physics: NeverScrollableScrollPhysics(),
-//                 itemBuilder: (context, i){
-//                   return ListTile(
-//                     title: Text(list[i]['pName']),
-//                     trailing: Container(
-//                         width: 60,
-//                         child: Switch(
-//                           value: isSwitched,
-//                           onChanged: (bool value) {
-//                             setState(() {
-//                               isSwitched = value;
-//                             });
-//                           },
-//                           activeColor: Colors.white,
-//                           activeTrackColor: Colors.green,
-//                           inactiveThumbColor: Colors.white,
-//                           inactiveTrackColor: Colors.red,
-//                         )
-//                     ),
-//                     onTap: (){},
-//                   );
-//
-//                 },
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }

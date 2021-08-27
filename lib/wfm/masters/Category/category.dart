@@ -7,8 +7,6 @@ import 'dart:convert';
 import 'package:awesome_loader/awesome_loader.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:propel/main_page.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:bottom_loader/bottom_loader.dart';
 
 
@@ -58,36 +56,23 @@ class _categoryState extends State<category> {
     return OrganizationId;
   }
 
-
-
-  Future<List> checkconnections() async {
-    var connectivityResult = await (Connectivity().checkConnectivity());
-    print(connectivityResult);
-    if (connectivityResult == ConnectivityResult.mobile) {
-      print("connectde mobile");
-    } else if (connectivityResult == ConnectivityResult.wifi) {
-      print("connectde wifi");
-    }else{
-      print("offline mode");
-    }
-  }
-
   Future<List> categoryData() async {
     final prefs = await SharedPreferences.getInstance();
     final orgId = await get_orgId();
-
     var res = await Network().categoryList('/CategoryList/$orgId');
     var body = json.decode(res.body);
-    if(body['status'] == 1){
-      var result = body['data'];
-      setState(() {
-        isSwitched = body['selectall'];
-        switchList = result;
-      });
-      return result;
-    }
-  }
 
+    return [];
+    // after organizations unhide
+    // if(body['status'] == 1){
+    //   var result = body['data'];
+    //   setState(() {
+    //     isSwitched = body['selectall'];
+    //     switchList = result;
+    //   });
+    //   return result;
+    // }
+  }
 
   Future<List> _onchanged(bool value,int index,int id) async {
 
@@ -114,7 +99,7 @@ class _categoryState extends State<category> {
           msg: body['data'],
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
-          // timeInSecForIos: 1,
+
           backgroundColor: Colors.grey[200],
           textColor: Colors.black
       );
@@ -125,21 +110,6 @@ class _categoryState extends State<category> {
     }
 
   }
-
-
-  Future<List> _unAssigned(bool value) async {
-
-   setState(() {
-     unAssigned = value;
-   });
-
-   // obtain shared preferences
-   final prefs = await SharedPreferences.getInstance();
-   // set value
-   prefs.setBool('unAssignedcategory', unAssigned);
-
-  }
-
 
   Future<List> _selectall(bool value) async {
     bl = new BottomLoader(
@@ -169,11 +139,10 @@ class _categoryState extends State<category> {
       setState(() {
         isSwitched = value;
       });
-      // obtain shared preferences
-      final prefs = await SharedPreferences.getInstance();
-      // set value
-      prefs.setBool('unAssignedcategory', value);
 
+      final prefs = await SharedPreferences.getInstance();
+
+      prefs.setBool('unAssignedcategory', value);
       bl.close();
     }
 
@@ -182,7 +151,6 @@ class _categoryState extends State<category> {
   @override
   void initState() {
     myFuture = categoryData();
-    checkconnections();
     super.initState();
   }
   @override
