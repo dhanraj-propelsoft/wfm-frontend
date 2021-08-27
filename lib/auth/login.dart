@@ -157,13 +157,7 @@ class _LoginPageState extends State<LoginPage > {
                 ],
               ),
               onPressed:  isButtonEnabled?() {
-                setState(() {
-                  phoneNo.text.isEmpty?phoneVal = true:phoneVal = false;
-                  phoneNo.text.length != 10?invalidphone=true:invalidphone = false;
-                  if(phoneVal == false && invalidphone == false){
-                    _mobile_no_check(phoneNo.text);
-                  }
-                });
+                _mobile_no_check(phoneNo.text);
               }:null,
             ),
             SizedBox(height: 20,),
