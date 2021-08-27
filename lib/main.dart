@@ -6,7 +6,6 @@ import 'package:propel/auth/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:propel/wfm/masters/Project/add_project.dart';
 
-
 void main() {
   runApp(MyApp());
 }
@@ -14,15 +13,14 @@ void main() {
 class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Propel WFM',
-      debugShowCheckedModeBanner: false,
-      home: Splash2(),
-      routes: <String,WidgetBuilder>{
-        '/addTask':(BuildContext context)=>new AddTask(),
-        '/addProject':(BuildContext context)=>new AddProject(),
-      },
-
-    );
+        title: 'Propel WFM',
+        debugShowCheckedModeBanner: false,
+        home: Splash2(),
+        routes: <String, WidgetBuilder>{
+          '/addTask': (BuildContext context) => new AddTask(),
+          '/addProject': (BuildContext context) => new AddProject(),
+        },
+        theme: ThemeData(primarySwatch: Colors.orange));
   }
 }
 
@@ -46,18 +44,18 @@ class CheckAuth extends StatefulWidget {
 }
 
 class _CheckAuthState extends State<CheckAuth> {
-
   bool isAuth = false;
   @override
   void initState() {
     _checkIfLoggedIn();
     super.initState();
   }
-  void _checkIfLoggedIn() async{
+
+  void _checkIfLoggedIn() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     var token = localStorage.getString('token');
 
-    if(token != null){
+    if (token != null) {
       setState(() {
         isAuth = true;
       });
@@ -77,9 +75,3 @@ class _CheckAuthState extends State<CheckAuth> {
     );
   }
 }
-
-
-
-
-
-
