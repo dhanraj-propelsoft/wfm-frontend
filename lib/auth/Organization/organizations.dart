@@ -14,6 +14,7 @@ class Organizations extends StatefulWidget {
 }
 
 class _OrganizationsState extends State<Organizations> {
+
   BottomLoader bl;
   bool isSwitched = false;
   bool frstorg = true;
@@ -43,50 +44,65 @@ class _OrganizationsState extends State<Organizations> {
     return OrganizationId;
   }
 
+
+
   Future<List> orgData() async {
-    var res = await Network().organizationsList('/user_companies');
+    var res = await Network().getMethodWithToken('/organization_list');
     var body = json.decode(res.body);
+    
+    if(body['status'] == 1){
+      var result = body['data'];
 
-    return [];
-    // after organization unhide
-    // if(body['status'] == 1){
-    //   var result = body['data'];
-    //   setState(() {
-    //     switchList = result;
-    //   });
-    //   return result;
-    // }
-  }
-
-  Future<List> _selectorg(bool value, int orgid) async {
-    bl = new BottomLoader(
-      context,
-      showLogs: true,
-      isDismissible: true,
-    );
-    bl.style(
-      message: 'Please wait...',
-    );
-    bl.display();
-    switchList.removeWhere((item) => item['id'] == orgid);
-    var data = {'currentorg': orgid, 'otherorg': switchList};
-    var res = await Network().ProjectStore(data, '/SwitchOrg');
-    var body = json.decode(res.body);
-
-    if (body['status'] == 1) {
-      final prefs = await SharedPreferences.getInstance();
-
-      prefs.setInt('orgid', orgid);
-      Fluttertoast.showToast(
-          msg: body['data']['name'] + " is Actived",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.grey[200],
-          textColor: Colors.black);
+      return result;
     }
-    myFuture = orgData();
-    bl.close();
   }
+  //
+  // Future<List> _selectorg(bool value, int orgid) async {
+  //   bl = new BottomLoader(
+  //     context,
+  //     showLogs: true,
+  //     isDismissible: true,
+  //   );
+  //   bl.style(
+  //     message: 'Please wait...',
+  //   );
+  //   bl.display();
+  //   switchList.removeWhere((item) => item['id'] == orgid);
+  //   var data = {'currentorg': orgid, 'otherorg': switchList};
+  //   var res = await Network().ProjectStore(data, '/SwitchOrg');
+  //   var body = json.decode(res.body);
+  //
+  //   if (body['status'] == 1) {
+  //     final prefs = await SharedPreferences.getInstance();
+  //
+  //     prefs.setInt('orgid', orgid);
+  //     Fluttertoast.showToast(
+  //         msg: body['data']['name'] + " is Actived",
+  //         toastLength: Toast.LENGTH_SHORT,
+  //         gravity: ToastGravity.BOTTOM,
+  //         backgroundColor: Colors.grey[200],
+  //         textColor: Colors.black);
+  //   }
+  //   myFuture = orgData();
+  //   bl.close();
+  // }
+
+  // void _runFilter(String enteredKeyword) {
+  //   List results = [];
+  //   print(enteredKeyword);
+  //   if (enteredKeyword.isEmpty) {
+  //     // if the search field is empty or only contains white-space, we'll display all users
+  //     results = switchList;
+  //   } else {
+  //     results = switchList.where((user) =>
+  //         user["pName"].toLowerCase().contains(enteredKeyword.toLowerCase()))
+  //         .toList();
+  //     // we use the toLowerCase() method to make it case-insensitive
+  //   }
+  //
+  //   // Refresh the UI
+  //   myFuture = orgData();
+  // }
 
   @override
   void initState() {
@@ -129,10 +145,70 @@ class _OrganizationsState extends State<Organizations> {
                 )
               ],
             ),
-            Divider(),
+            Divider(thickness: 01.0,),
+            Expanded(
+              child: FutureBuilder<List>(
+                  future: myFuture,
+                  builder: (context,snapshot){
+                    if(snapshot.hasError){
+                      print('Error in Loading'+snapshot.error.toString());
+                    }
+                    if(snapshot.hasData){
+                      if(snapshot.data.length == 0){
+                        return Container(
+                          child: Center(child: Text("Organization is empty")),
+                        );
+                      }else {
+                        return Scaffold(
+                          body: SingleChildScrollView(
+                            child: Container(
+                              padding: EdgeInsets.only(top: 05, right: 05),
+                              child: Column(
+                                children: <Widget>[
+                                  ListView.builder(
+                                    itemCount: snapshot.data.length,
+                                    shrinkWrap: true,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    itemBuilder: (context, i) {
+                                      return ListTile(
+                                        leading: CircleAvatar(
+                                          // backgroundImage: AssetImage(widget.image),
+                                          child: Text(
+                                              snapshot.data[i]['pName'].toString()
+                                                  .substring(0, 1)
+                                                  .toUpperCase()),
+                                          maxRadius: 20,
+                                        ),
+                                        title: Text(snapshot.data[i]['pName']),
+
+                                        onTap: () {},
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+                    }
+                    else{
+                      return Container(
+                        child: Center(
+                          child: AwesomeLoader(
+                            loaderType: AwesomeLoader.AwesomeLoader3,
+                            color: Colors.orange,
+                          ),
+                        ),
+                      );
+                    }
+                  }),
+            ),
           ],
         ),
       ),
+
+
     );
   }
 }

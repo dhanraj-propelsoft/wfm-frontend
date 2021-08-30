@@ -38,6 +38,17 @@ class _MainPageState extends State<MainPage> {
       setState(() {
         initalindex = widget.index;
       });
+      if (widget.index == 0) {
+        Fluttertoast.showToast(
+            msg: (widget.page == "Add")
+                ? "Organization Added Successfully"
+                : "Organization Updated Successfully",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            // timeInSecForIos: 1,
+            backgroundColor: Colors.grey,
+            textColor: Colors.black);
+      }
       if (widget.index == 1) {
         Fluttertoast.showToast(
             msg: (widget.page == "Add")
@@ -137,12 +148,12 @@ class _MainPageState extends State<MainPage> {
             ),
           ),
           actions: <Widget>[
-            // IconButton(
-            //   icon: Icon(Icons.search),
-            //   onPressed: (){
-            //
-            //   },
-            // ),
+            IconButton(
+              icon: Icon(Icons.search),
+              onPressed: (){
+
+              },
+            ),
             // PopupMenuButton(itemBuilder: (context)=>[
             //   PopupMenuItem(child: Text("Menu1")),
             //   PopupMenuItem(child: Text("Menu2")),

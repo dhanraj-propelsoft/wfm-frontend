@@ -4,6 +4,8 @@ import 'dart:convert';
 
 import 'package:propel/network_utils/api.dart';
 
+import '../../main_page.dart';
+
 class AddOrganization extends StatefulWidget {
   @override
   _AddOrganizationState createState() => _AddOrganizationState();
@@ -208,7 +210,7 @@ class _AddOrganizationState extends State<AddOrganization> {
   }
 
   Future storeOrganization() async {
-    print(" Work correctly");
+
     setState(() {
       _isLoading = true;
     });
@@ -221,9 +223,15 @@ class _AddOrganizationState extends State<AddOrganization> {
     };
     var res = await Network().postMethodWithToken(data, '/organization_store');
     var body = json.decode(res.body);
-    print(body);
+
     if (body['status'] == 1) {
-      Navigator.of(context).pop();
+
+      Navigator.push(context,
+          MaterialPageRoute(
+              builder: (context) => MainPage(
+                  index:0,
+                  page:"Add"
+              )));
     } else {}
   }
 }
