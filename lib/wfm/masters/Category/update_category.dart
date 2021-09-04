@@ -32,24 +32,17 @@ class _UpdateCategoryState extends State<UpdateCategory> {
 
 
 
-  get_orgId() async{
-    final prefs = await SharedPreferences.getInstance();
-    seletedOrg = prefs.getInt('orgid') ?? 0;
-    SharedPreferences localStorage = await SharedPreferences.getInstance();
-    var Data = jsonDecode(localStorage.getString('allData'));
-    OrganizationId = seletedOrg == 0?Data['firstOrg']:seletedOrg;
-    return OrganizationId;
-  }
+
 
   Future categoryUpdate(String name) async {
     setState(() {
       _isLoading = true;
     });
-    final orgId = await get_orgId();
+    int orgId = await Network().GetActiveOrg();
 
     var data = {"pName": name,'orgId':orgId};
     var id = widget.id;
-    var res = await Network().categoryUpdate(data, '/CategoryUpdate/$id');
+    var res = await Network().postMethodWithToken(data, '/CategoryUpdate/$id');
     var body = json.decode(res.body);
 
     if(body['status'] == 1){
@@ -70,6 +63,17 @@ class _UpdateCategoryState extends State<UpdateCategory> {
           backgroundColor: Colors.grey,
           textColor: Colors.black
       );
+    }else{
+      setState(() {
+        _isLoading = false;
+      });
+      Fluttertoast.showToast(
+          msg: "Server Error,Contact Admin",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.grey[200],
+          textColor: Colors.black
+      );
     }
   }
   @override
@@ -85,7 +89,7 @@ class _UpdateCategoryState extends State<UpdateCategory> {
           child: Center(
             child: AwesomeLoader(
               loaderType: AwesomeLoader.AwesomeLoader3,
-              color: Colors.blue,
+              color: Colors.orangeAccent,
             ),
           ),
         ),

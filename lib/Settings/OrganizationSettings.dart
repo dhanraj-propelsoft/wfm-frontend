@@ -70,6 +70,12 @@ class _OrganizationSettingsState extends State<OrganizationSettings> {
             ListTile(
               title: Text("Manage Workforce"),
               trailing: Icon(Icons.arrow_forward_ios_sharp),
+              onTap: (){
+                // Navigator.push(context,
+                //     MaterialPageRoute(
+                //         builder: (context) => OrganizationSettings(
+                //         )));
+              },
             ),
             Divider(),
             ListTile(

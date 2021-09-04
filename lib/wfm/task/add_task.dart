@@ -64,21 +64,6 @@ class _AddTaskState extends State<AddTask> {
   List _selected_followers = [];
   bool isButtonEnabled = false;
 
-
-  static List<Animal> _animals = [];
-  // final _items = _animals.map((animal) => MultiSelectItem(animal.id, animal.name)).toList();
-  List _selectedAnimals3 = [];
-
-  get_orgId() async{
-    final prefs = await SharedPreferences.getInstance();
-    seletedOrg = prefs.getInt('orgid') ?? 0;
-    SharedPreferences localStorage = await SharedPreferences.getInstance();
-    var Data = jsonDecode(localStorage.getString('allData'));
-    OrganizationId = seletedOrg == 0?Data['firstOrg']:seletedOrg;
-    return OrganizationId;
-  }
-
-
   void _handleRadioValueChange(int value) {
     setState(() {
       prorityid = value;
@@ -94,27 +79,16 @@ class _AddTaskState extends State<AddTask> {
   }
 
   void initState() {
-    super.initState();
     _taskData();
+    super.initState();
+
   }
 
   @override
 
-  Future<String> _cateBasedProj(int CategoryId) async {
-    var res = await Network().projectList('/CategoryBasedProj/$CategoryId');
-    var body = json.decode(res.body);
-    if(body['status'] == 1){
-      var result = body['data'];
-      print(result);
-
-      setState(() {
-        projectList= [];
-        projectList = result;
-      });
-    }
-  }
 
   Future<String> _ProjBasedCate(int ProjId) async {
+    print(ProjId);
     bl = new BottomLoader(
       context,
       showLogs: true,
@@ -124,14 +98,13 @@ class _AddTaskState extends State<AddTask> {
       message: 'Please wait...',
     );
     bl.display();
-    var res = await Network().projectList('/ProjBasedCategory/$ProjId');
+    var res = await Network().getMethodWithToken('/ProjBasedCategory/$ProjId');
     var body = json.decode(res.body);
+    print(body);
     if(body['status'] == 1){
         var projectData = body['projecData'];
         var catgoryData = body['categoryData'];
-
       setState(() {
-
         if(projectData['deadline_date'] != "Lifetime"){
           ProjEndDate = projectData['deadline_date'];
           DuedateController.text = ProjEndDate;
@@ -145,48 +118,28 @@ class _AddTaskState extends State<AddTask> {
 
       });
       bl.close();
+    }else{
+      bl.close();
+      Fluttertoast.showToast(
+          msg: "Server Error,Contact Admin",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.grey[200],
+          textColor: Colors.black
+      );
     }
   }
 
-
-  // Future Assignedbychg(int Assignedbyid) async {
-  //
-  //   var res = await Network().projectList('/ProjBasedCategory/$ProjId');
-  //   var body = json.decode(res.body);
-  //   // if(body['status'] == 1){
-  //   //   var category = body['categoryDatas'];
-  //   //   var projectData = body['projecData'];
-  //   //   // var categoryList = body['CategoryList'];
-  //   //
-  //   //
-  //   //
-  //   //   setState(() {
-  //   //
-  //   //     if(projectData['deadline_date'] != "Lifetime"){
-  //   //       ProjEndDate = projectData['deadline_date'];
-  //   //       DuedateController.text = ProjEndDate;
-  //   //     }
-  //   //     categoryList = [];
-  //   //     categoryList = body['CategoryList'];
-  //   //
-  //   //
-  //   //   });
-  //   // }
-  // }
 
   Future<String> _taskData() async {
     setState(() {
       _isLoading = true;
     });
-    SharedPreferences localStorage = await SharedPreferences.getInstance();
-    var Data = jsonDecode(localStorage.getString('allData'));
-    final orgId = await get_orgId();
-    var res = await Network().projectCreate('/taskCreate/$orgId');
+    int orgId = await Network().GetActiveOrg();
+    var res = await Network().getMethodWithToken('/taskCreate/$orgId');
     var body = json.decode(res.body);
-
     if(body['status'] == 1){
       var result = body['data'];
-      // var formattedDate ="${todayDate.year}-${todayDate.month}-${todayDate.day}";
       var now = new DateTime.now();
       var formatter = new DateFormat('yyyy-MM-dd');
       String todayDate = formatter.format(now);
@@ -195,36 +148,33 @@ class _AddTaskState extends State<AddTask> {
         AssignedtoList = result['pAssignedtoList'];
         FollowerList = result['pFollowerList'];
         tempFollowerList = result['pFollowerList'];
-        result['pFollowerList'].forEach((item) => _companies .add(CompanyWidget(int.parse(item['person_id']), item['first_name'])));
-        // _companies.removeWhere((item) => item.id == int.parse(Data['person_id']));
+        // result['pFollowerList'].forEach((item) => _companies .add(CompanyWidget(int.parse(item['person_id']), item['first_name'])));
         categoryList = result['pCategoryDatas'];
         projectList = result['pProjectDatas'];
         CreateddateController.text = todayDate;
         DuedateController.text = todayDate;
-        Assignedbyemployee = int.parse(Data['person_id']);
-        Assignedtoemployee = int.parse(Data['person_id']);
-        // print(FollowerList);
-        // print(Data['person_id']);
-        // FollowerList.removeWhere((item) => int.parse(item['person_id']) == int.parse(Data['person_id']));
-        // print(FollowerList);
-        // print(Assignedbyemployee);
-        // print(Assignedtoemployee);
+        _isLoading = false;
       });
-
+    }else{
+      Fluttertoast.showToast(
+          msg: "Server Error,Contact Admin",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.grey[200],
+          textColor: Colors.black
+      );
     }
-    setState(() {
-      _isLoading = false;
-    });
+
   }
 
   Future taskSave(String name,String Details,String StartDate,String EndDate,int assignedby,int assignedto,int category,int project,int prority,List _selected_followers) async {
     setState(() {
       _isLoading = true;
     });
-    final orgId = await get_orgId();
+    int orgId = await Network().GetActiveOrg();
     var data = {'pName' : name,'pDetails':Details,'pStartDate':StartDate,'pEndDate':EndDate,'pAssignedBy':assignedby,'pAssignedTo':assignedto,'pCategoryId':category,'pProjectId':project,'pProrityId':prority,'pFollower':_selected_followers,'orgId':orgId};
 
-    var res = await Network().ProjectStore(data, '/taskStore');
+    var res = await Network().postMethodWithToken(data, '/taskStore');
     var body = json.decode(res.body);
     if(body['status'] == 1){
       Navigator.push(context,
@@ -420,27 +370,18 @@ class _AddTaskState extends State<AddTask> {
                             child: ButtonTheme(
                               alignedDropdown: true,
                               child: DropdownButton(
-
                                 value: Assignedbyemployee,
-                                // iconSize: 30,
-                                // icon: (null),
-                                // style: TextStyle(
-                                //   color: Colors.black54,
-                                //   fontSize: 16,
-                                // ),
-
                                 hint: Text('Assigned By'),
                                 items: AssignedbyList?.map((item) {
                                   return new DropdownMenuItem(
-                                    child: new Text(item['first_name'].toString()),
-                                    value: int.parse(item['person_id']),
+                                    child: new Text(item['person']['first_name']),
+                                    value: item['person']['id'],
                                   );
                                 })?.toList() ?? [],
-                                // onChanged: (newValue) => Assignedbychg(value),
+
                                 onChanged: (newValue) {
                                   setState(() {
                                     Assignedbyemployee = newValue;
-                                    print(Assignedbyemployee);
                                     _companies = [];
                                     tempFollowerList.forEach((item) => _companies .add(CompanyWidget(int.parse(item['person_id']), item['first_name'])));
                                     _companies.removeWhere((item) => item.id == Assignedbyemployee);
@@ -470,17 +411,12 @@ class _AddTaskState extends State<AddTask> {
                               alignedDropdown: true,
                               child: DropdownButton(
                                 value: Assignedtoemployee,
-                                // iconSize: 30,
-                                // icon: (null),
-                                // style: TextStyle(
-                                //   color: Colors.black54,
-                                //   fontSize: 16,
-                                // ),
+
                                 hint: Text('Assigned To'),
                                 items: AssignedtoList?.map((item) {
                                   return new DropdownMenuItem(
-                                    child: new Text(item['first_name'].toString()),
-                                    value: int.parse(item['person_id']),
+                                    child: new Text(item['person']['first_name']),
+                                    value: item['person']['id'],
                                   );
                                 })?.toList() ??
                                     [],
@@ -524,38 +460,6 @@ class _AddTaskState extends State<AddTask> {
                         children: [
 
                           Expanded(
-                            // child: DropdownButtonHideUnderline(
-                            //       child: ButtonTheme(
-                            //         alignedDropdown: true,
-                            //         child: DropdownButton(
-                            //           value: seletedcategory,
-                            //           // icon: Icon(
-                            //           //   Icons.account_tree,
-                            //           //   color: Colors.grey,
-                            //           //   size: 20.09,
-                            //           // ),
-                            //           // iconSize: 30,
-                            //           // icon: (null),
-                            //           // style: TextStyle(
-                            //           //   color: Colors.black54,
-                            //           //   fontSize: 16,
-                            //           // ),
-                            //           hint: Text('Unassigned Category'),
-                            //           items: categoryList?.map((item) {
-                            //             return new DropdownMenuItem(
-                            //               child: new Text(item['name'].toString()),
-                            //               value: item['id'],
-                            //             );
-                            //           })?.toList() ?? [],
-                            //           onChanged: (newValue) {
-                            //             setState(() {
-                            //               seletedcategory = newValue;
-                            //               _cateBasedProj(seletedcategory);
-                            //             });
-                            //           },
-                            //         ),
-                            //       ),
-                            //     ),
                             child: Text(Category,style: TextStyle(fontSize: 16.0,
                           color: Colors.grey
                       ),),
@@ -567,17 +471,6 @@ class _AddTaskState extends State<AddTask> {
                                 alignedDropdown: true,
                                 child: DropdownButton(
                                   value: seletedproject,
-                                  // icon: Icon(
-                                  //   Icons.layers,
-                                  //   color: Colors.grey,
-                                  //   size: 20.09,
-                                  // ),
-                                  // iconSize: 30,
-                                  // icon: (null),
-                                  // style: TextStyle(
-                                  //   color: Colors.black54,
-                                  //   fontSize: 16,
-                                  // ),
                                   hint: Text('Unassigned Proj'),
                                   items: projectList?.map((item) {
                                     return new DropdownMenuItem(
@@ -588,22 +481,8 @@ class _AddTaskState extends State<AddTask> {
                                   onChanged: (newValue) {
                                     setState(() {
                                       seletedproject = newValue;
-
-                                      // if(seletedcategory == null){
-                                      //   Fluttertoast.showToast(
-                                      //
-                                      //       msg: "Select Project first",
-                                      //       toastLength: Toast.LENGTH_SHORT,
-                                      //       gravity: ToastGravity.BOTTOM,
-                                      //       // timeInSecForIos: 1,
-                                      //       backgroundColor: Colors.grey,
-                                      //       textColor: Colors.black
-                                      //   );
-                                      //   seletedproject= null;
-                                      // }
-                                      _ProjBasedCate(seletedproject);
-
                                     });
+                                    _ProjBasedCate(seletedproject);
                                   },
                                 ),
                               ),
@@ -665,111 +544,33 @@ class _AddTaskState extends State<AddTask> {
                     ],
                   ),
                 ),
-                Container(
-                  padding: EdgeInsets.only(left: 10,right: 10),
-                  child: MultiSelectBottomSheetField(
-                    initialValue: _selected_followers,
-                    initialChildSize: 0.7,
-                    maxChildSize: 0.95,
-                    title: Text("Select Followers"),
-                    buttonText: Text("Followers"),
-                    items:  _companies.map((animal) => MultiSelectItem(animal.id, animal.name)).toList(),
-                    searchable: true,
-                    onConfirm: (values) {
-                      setState(() {
-                        _selected_followers = values;
-                      });
-
-                    },
-                    // chipDisplay: MultiSelectChipDisplay(
-                    //   onTap: (item) {
-                    //     setState(() {
-                    //       _selectedAnimals3.remove(item);
-                    //     });
-                    //     _multiSelectKey.currentState.validate();
-                    //   },
-                    // ),
-                  ),
-                ),
+                // temporry hide by Ajith
                 // Container(
-                //     padding: EdgeInsets.only(left:15,right: 10,top: 05),
-                //     child: Column(
-                //       crossAxisAlignment: CrossAxisAlignment.start,
-                //       children: [
-                //         Text("Followers",style: TextStyle(
-                //             color: Colors.grey
-                //         )),
-                //         SingleChildScrollView(
-                //           physics: BouncingScrollPhysics(),
-                //           scrollDirection: Axis.horizontal,
-                //           child: Wrap(
-                //             children: companyPosition.toList(),
-                //           ),
-                //         ),
-                //       ],
-                //     ),
-
+                //   padding: EdgeInsets.only(left: 10,right: 10),
+                //   child: MultiSelectBottomSheetField(
+                //     initialValue: _selected_followers,
+                //     initialChildSize: 0.7,
+                //     maxChildSize: 0.95,
+                //     title: Text("Select Followers"),
+                //     buttonText: Text("Followers"),
+                //     items:  _companies.map((animal) => MultiSelectItem(animal.id, animal.name)).toList(),
+                //     searchable: true,
+                //     onConfirm: (values) {
+                //       setState(() {
+                //         _selected_followers = values;
+                //       });
+                //
+                //     },
+                //     // chipDisplay: MultiSelectChipDisplay(
+                //     //   onTap: (item) {
+                //     //     setState(() {
+                //     //       _selectedAnimals3.remove(item);
+                //     //     });
+                //     //     _multiSelectKey.currentState.validate();
+                //     //   },
+                //     // ),
+                //   ),
                 // ),
-
-                // MultiSelectFormField(
-                //       autovalidate: false,
-                //       chipBackGroundColor: Colors.blue,
-                //       chipLabelStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-                //       // dialogTextStyle: TextStyle(fontWeight: FontWeight.bold),
-                //       // checkBoxActiveColor: Colors.blue,
-                //       // checkBoxCheckColor: Colors.white,
-                //       // FollowerList.removeWhere((item) => item['id'] == Assignedbyemployee);
-                //       dialogShapeBorder: RoundedRectangleBorder(
-                //           borderRadius: BorderRadius.all(Radius.circular(12.0))),
-                //       title: Text(
-                //         "Followers",
-                //         style: TextStyle(fontSize: 16),
-                //       ),
-                //       validator: (value) {
-                //
-                //
-                //         if (value == null || value.length == 0) {
-                //           return 'Please select one or more options';
-                //         }
-                //         return null;
-                //       },
-                //       dataSource: FollowerList,
-                //       textField: 'first_name',
-                //       valueField: 'person_id'
-                //           '',
-                //       okButtonLabel: 'OK',
-                //       cancelButtonLabel: 'CANCEL',
-                //       // hintWidget: Text('Tap to Select followers'),
-                //       initialValue: _selected_followers,
-                //       onSaved: (value) {
-                //         setState(() {
-                //           _selected_followers = value;
-                //
-                //           // if(Assignedbyemployee == null || Assignedtoemployee == null){
-                //           //   Fluttertoast.showToast(
-                //           //       msg: "Select Assignedby and Assigned to first",
-                //           //       toastLength: Toast.LENGTH_SHORT,
-                //           //       gravity: ToastGravity.BOTTOM,
-                //           //       // timeInSecForIos: 1,
-                //           //       backgroundColor: Colors.grey,
-                //           //       textColor: Colors.black
-                //           //   );
-                //           //   selected_follower.clear();
-                //           // }
-                //           // else {
-                //           //
-                //           //       selectedfollower.removeWhere((item) => int.parse(item) == Assignedbyemployee);
-                //           //
-                //           //       selectedfollower.removeWhere((item) => int.parse(item) == Assignedtoemployee);
-                //           //
-                //           // }
-                //
-                //           //
-                //           //   // selectedfollower.removeWhere((item) => int.parse(item) == Assignedtoemployee);
-                //           // }
-                //         });
-                //       },
-                //     )
 
               ],
             ),
@@ -789,7 +590,7 @@ class _AddTaskState extends State<AddTask> {
                     ],
                   ),
                   onPressed: (){
-                    Navigator.pushNamed(context, '/');
+                    Navigator.of(context).pop();
                   }
               ),
               RaisedButton(
@@ -860,324 +661,9 @@ class _AddTaskState extends State<AddTask> {
             ],
           ),
         ),
-        // persistentFooterButtons: [
-        //   Container(
-        //     child: Row(
-        //       children: [
-        //         RaisedButton(
-        //             color: Colors.grey,
-        //             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        //             child: Row(
-        //               children: <Widget>[
-        //                 Text('Cancel',style: TextStyle(color: Colors.white,),),
-        //                 Icon(Icons.close,color: Colors.white),
-        //               ],
-        //             ),
-        //             onPressed: (){
-        //               Navigator.pushNamed(context, '/');
-        //             }
-        //         ),
-        //         SizedBox(
-        //           width: 50,
-        //         ),
-        //         RaisedButton(
-        //             color: Colors.blue,
-        //             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        //             child: Row(
-        //               children: <Widget>[
-        //                 Text('Clear',style: TextStyle(color: Colors.white,),),
-        //                 Icon(Icons.redo_sharp,color: Colors.white),
-        //               ],
-        //             ),
-        //             onPressed: (){}
-        //         ),
-        //         SizedBox(
-        //           width: 50,
-        //         ),
-        //         RaisedButton(
-        //             color: Colors.green,
-        //             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        //             child: Row(
-        //               children: <Widget>[
-        //                 Text('Save',style: TextStyle(color: Colors.white,),),
-        //                 Icon(Icons.save,color: Colors.white),
-        //               ],
-        //             ),
-        //             onPressed: (){
-        //
-        //               setState(() {
-        //                 Name.text.isEmpty?_valName = true:_valName = false;
-        //                 if(_valName == false){
-        //                   taskSave(Name.text,Details.text,CreateddateController.text,DuedateController.text,Assignedbyemployee,Assignedtoemployee,seletedcategory,seletedproject,prorityid,selectedfollower);
-        //                 }
-        //               });
-        //             }
-        //         ),
-        //       ],
-        //     ),
-        //   ),
-        // ],
       );
     }
 
   }
-  // Iterable<Widget> get companyPosition sync* {
-  //   for (CompanyWidget company in _companies) {
-  //
-  //     yield Padding(
-  //       padding: const EdgeInsets.all(6.0),
-  //       child: FilterChip(
-  //         // backgroundColor: Colors.tealAccent[200],
-  //         avatar: CircleAvatar(
-  //           backgroundColor: Colors.grey,
-  //           child: Text(company.name[0].toUpperCase(),style: TextStyle(color: Colors.white),),
-  //         ),
-  //         label: Text(company.name,),
-  //         selected: _selected_followers.contains(company.id),
-  //         // selected: company.id,
-  //         selectedColor: Colors.orange,
-  //         onSelected: (bool selected) {
-  //
-  //           setState(() {
-  //             if (selected) {
-  //               print(company.id);
-  //               print(Assignedbyemployee);
-  //
-  //               // _selected_followers.removeWhere((int id) {
-  //               //   return id == Assignedbyemployee;
-  //               // });
-  //               // _selected_followers.removeWhere((int id) {
-  //               //   return id == Assignedtoemployee;
-  //               // });
-  //               _selected_followers.add(company.id);
-  //             } else {
-  //
-  //               _selected_followers.removeWhere((int id) {
-  //                 return id == company.id;
-  //               });
-  //             }
-  //           });
-  //         },
-  //         // onSelected: (bool value)=>follower_update(value,company.id),
-  //       ),
-  //     );
-  //   }
-  // }
 }
 
-// class _AddTaskState extends State<AddTask> {
-//   final dateController = TextEditingController();
-//   final duedateController = TextEditingController();
-//
-//   String categorydropdownValue = 'UnAssigned Category';
-//   String projectdropdownValue = 'UnAssigned Project';
-//   String _name;
-//   String _email;
-//   String _password;
-//   String _url;
-//   String _phoneNumber;
-//   String _calories;
-//
-//   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-//
-//   Widget _buildName() {
-//     return TextFormField(
-//       decoration: InputDecoration(labelText: 'Name'),
-//       maxLength: 10,
-//       validator: (String value) {
-//         if (value.isEmpty) {
-//           return 'Name is Required';
-//         }
-//
-//         return null;
-//       },
-//       onSaved: (String value) {
-//         _name = value;
-//       },
-//     );
-//   }
-//
-//   Widget _buildEmail() {
-//     return TextFormField(
-//       decoration: InputDecoration(labelText: 'Email'),
-//       validator: (String value) {
-//         if (value.isEmpty) {
-//           return 'Email is Required';
-//         }
-//
-//         if (!RegExp(
-//             r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
-//             .hasMatch(value)) {
-//           return 'Please enter a valid email Address';
-//         }
-//
-//         return null;
-//       },
-//       onSaved: (String value) {
-//         _email = value;
-//       },
-//     );
-//   }
-//
-//   Widget _buildPassword() {
-//     return TextFormField(
-//       decoration: InputDecoration(labelText: 'Password'),
-//       keyboardType: TextInputType.visiblePassword,
-//       validator: (String value) {
-//         if (value.isEmpty) {
-//           return 'Password is Required';
-//         }
-//
-//         return null;
-//       },
-//       onSaved: (String value) {
-//         _password = value;
-//       },
-//     );
-//   }
-//
-//   Widget _builURL() {
-//     return TextFormField(
-//       decoration: InputDecoration(labelText: 'Url'),
-//       keyboardType: TextInputType.url,
-//       validator: (String value) {
-//         if (value.isEmpty) {
-//           return 'URL is Required';
-//         }
-//
-//         return null;
-//       },
-//       onSaved: (String value) {
-//         _url = value;
-//       },
-//     );
-//   }
-//
-//   Widget _buildPhoneNumber() {
-//     return TextFormField(
-//       decoration: InputDecoration(labelText: 'Phone number'),
-//       keyboardType: TextInputType.phone,
-//       validator: (String value) {
-//         if (value.isEmpty) {
-//           return 'Phone number is Required';
-//         }
-//
-//         return null;
-//       },
-//       onSaved: (String value) {
-//         _url = value;
-//       },
-//     );
-//   }
-//
-//   Widget _buildCalories() {
-//     return TextFormField(
-//       decoration: InputDecoration(labelText: 'Calories'),
-//       keyboardType: TextInputType.number,
-//       validator: (String value) {
-//         int calories = int.tryParse(value);
-//
-//         if (calories == null || calories <= 0) {
-//           return 'Calories must be greater than 0';
-//         }
-//
-//         return null;
-//       },
-//       onSaved: (String value) {
-//         _calories = value;
-//       },
-//     );
-//   }
-//   @override
-//   void dispose() {
-//     // Clean up the controller when the widget is removed
-//     dateController.dispose();
-//     duedateController.dispose();
-//     super.dispose();
-//   }
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: Text("Add New Task")),
-//       // body: SingleChildScrollView(
-//       //   child: Container(
-//       //     margin: EdgeInsets.all(24),
-//       //     child: Form(
-//       //       key: _formKey,
-//       //       child: Column(
-//       //         mainAxisAlignment: MainAxisAlignment.center,
-//       //         children: <Widget>[
-//       //           _buildName(),
-//       //           _buildEmail(),
-//       //           _buildPassword(),
-//       //           _builURL(),
-//       //           _buildPhoneNumber(),
-//       //           _buildCalories(),
-//       //           SizedBox(height: 100),
-//       //           RaisedButton(
-//       //             child: Text(
-//       //               'Submit',
-//       //               style: TextStyle(color: Colors.blue, fontSize: 16),
-//       //             ),
-//       //             onPressed: () {
-//       //               if (!_formKey.currentState.validate()) {
-//       //                 return;
-//       //               }
-//       //
-//       //               _formKey.currentState.save();
-//       //
-//       //               //Send to API
-//       //             },
-//       //           )
-//       //         ],
-//       //       ),
-//       //     ),
-//       //   ),
-//       // ),
-//       body: SingleChildScrollView(
-//         child: Row(
-//           children: [
-//             Flexible(
-//               child: TextField(
-//                 readOnly: true,
-//                 controller: dateController,
-//                 decoration: InputDecoration(
-//                     hintText: 'Pick your Date',
-//                     labelText: 'Created Date'
-//                 ),
-//                   onTap: () async {
-//                     var date =  await showDatePicker(
-//                         context: context,
-//                         initialDate:DateTime.now(),
-//                         firstDate:DateTime(1900),
-//                         lastDate: DateTime(2100));
-//                     dateController.text = date.toString().substring(0,10);
-//                   },
-//               ),
-//             ),
-//
-//             Flexible(
-//               child: TextField(
-//                 readOnly: true,
-//                 controller: duedateController,
-//                 decoration: InputDecoration(
-//                     hintText: 'Pick your Date',
-//                     labelText: 'Created Date'
-//                 ),
-//                 onTap: () async {
-//                   var date =  await showDatePicker(
-//                       context: context,
-//                       initialDate:DateTime.now(),
-//                       firstDate:DateTime(1900),
-//                       lastDate: DateTime(2100));
-//                   duedateController.text = date.toString().substring(0,10);
-//                 },
-//               ),
-//             ),
-//           ],
-//         ),
-//
-//       ),
-//     );
-//   }
-// }

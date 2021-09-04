@@ -52,8 +52,45 @@ class _OrganizationsState extends State<Organizations> {
     
     if(body['status'] == 1){
       var result = body['data'];
-
+        setState(() {
+          switchList = result;
+        });
       return result;
+    }else{
+      Fluttertoast.showToast(
+                  msg: "Server Error,Contact Admin.",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  backgroundColor: Colors.grey[200],
+                  textColor: Colors.black);
+    }
+  }
+
+  Future<List> _onchanged(bool value,int id) async {
+
+    bl = new BottomLoader(
+      context,
+      showLogs: true,
+      isDismissible: true,
+    );
+    bl.style(
+      message: 'Please wait...',
+    );
+    bl.display();
+    var data = {'orgId' : id,'status':value?1:0};
+    var res = await Network().postMethodWithToken(data, '/switch_org');
+    var body = json.decode(res.body);
+    print(body);
+    if (body['status'] == 1) {
+      bl.close();
+      Fluttertoast.showToast(
+          msg: body['message'],
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.grey[200],
+          textColor: Colors.black);
+      myFuture = orgData();
+
     }
   }
   //
@@ -77,32 +114,17 @@ class _OrganizationsState extends State<Organizations> {
   //
   //     prefs.setInt('orgid', orgid);
   //     Fluttertoast.showToast(
-  //         msg: body['data']['name'] + " is Actived",
-  //         toastLength: Toast.LENGTH_SHORT,
-  //         gravity: ToastGravity.BOTTOM,
-  //         backgroundColor: Colors.grey[200],
-  //         textColor: Colors.black);
-  //   }
-  //   myFuture = orgData();
-  //   bl.close();
+  //   //         msg: body['data']['name'] + " is Actived",
+  //   //         toastLength: Toast.LENGTH_SHORT,
+  //   //         gravity: ToastGravity.BOTTOM,
+  //   //         backgroundColor: Colors.grey[200],
+  //   //         textColor: Colors.black);
+  //   //   }
+  //   //   myFuture = orgData();
+  //   //   bl.close();
   // }
 
-  // void _runFilter(String enteredKeyword) {
-  //   List results = [];
-  //   print(enteredKeyword);
-  //   if (enteredKeyword.isEmpty) {
-  //     // if the search field is empty or only contains white-space, we'll display all users
-  //     results = switchList;
-  //   } else {
-  //     results = switchList.where((user) =>
-  //         user["pName"].toLowerCase().contains(enteredKeyword.toLowerCase()))
-  //         .toList();
-  //     // we use the toLowerCase() method to make it case-insensitive
-  //   }
-  //
-  //   // Refresh the UI
-  //   myFuture = orgData();
-  // }
+
 
   @override
   void initState() {
@@ -180,6 +202,17 @@ class _OrganizationsState extends State<Organizations> {
                                           maxRadius: 20,
                                         ),
                                         title: Text(snapshot.data[i]['pName']),
+                                        trailing: Container(
+                                            width: 60,
+                                            child: Switch(
+                                              value: switchList[i]['pIsdefault'],
+                                              onChanged: (bool expanding) => _onchanged(expanding,snapshot.data[i]['pId']),
+                                              activeColor: Colors.white,
+                                              activeTrackColor: Colors.green,
+                                              inactiveThumbColor: Colors.white,
+                                              inactiveTrackColor: Colors.red,
+                                            )
+                                        ),
 
                                         onTap: () {},
                                       );

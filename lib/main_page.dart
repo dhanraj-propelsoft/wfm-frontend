@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:propel/wfm/masters/Category/category.dart';
 import 'package:propel/wfm/masters/Project/project.dart';
 import 'auth/Organization/organizations.dart';
-import 'package:propel/wfm/task/task_list.dart';
+import 'package:propel/wfm/task/task.dart';
 import 'package:propel/network_utils/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:propel/main.dart';
@@ -21,14 +21,22 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  String name;
-  String email;
+
   int initalindex;
   bool firstOrg = false;
   BottomLoader bl;
+
+  _load_data()async{
+    int org_id = await Network().GetActiveOrg();
+    if(org_id != 0){
+      setState(() {
+        firstOrg = true;
+      });
+    }
+  }
   @override
   void initState() {
-    _loadUserData();
+    _load_data();
     super.initState();
     if (widget.index == null) {
       setState(() {
@@ -85,28 +93,6 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
-  _loadUserData() async {
-    SharedPreferences localStorage = await SharedPreferences.getInstance();
-    var user = jsonDecode(localStorage.getString('user'));
-    var Data = jsonDecode(localStorage.getString('allData'));
-
-    if (Data['firstOrg'] == 0) {
-      setState(() {
-        firstOrg = false;
-      });
-    } else {
-      setState(() {
-        firstOrg = true;
-      });
-    }
-
-    if (user != null) {
-      setState(() {
-        name = user['name'];
-        email = user['email'];
-      });
-    }
-  }
 
   TabBar get _tabBar => TabBar(
         indicatorColor: Colors.orangeAccent,
@@ -148,61 +134,9 @@ class _MainPageState extends State<MainPage> {
             ),
           ),
           actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.search),
-              onPressed: (){
 
-              },
-            ),
-            // PopupMenuButton(itemBuilder: (context)=>[
-            //   PopupMenuItem(child: Text("Menu1")),
-            //   PopupMenuItem(child: Text("Menu2")),
-            //   PopupMenuItem(child: Text("Menu3")),
-            // ])
           ],
         ),
-        // drawer: Drawer(
-        //   elevation: 16.0,
-        //   child: Column(
-        //     children: <Widget>[
-        //       UserAccountsDrawerHeader
-        //         (accountName: Text(name.toString(),style: TextStyle(color: Colors.white),),
-        //         accountEmail: Text(email.toString(),style: TextStyle(color: Colors.white),),
-        //         currentAccountPicture: CircleAvatar(
-        //           child: Text(name.toString().substring(0,1).toUpperCase(),style: new TextStyle(
-        //             fontSize: 40.0,
-        //             color: Colors.grey,
-        //           ),),
-        //           backgroundColor: Colors.white,
-        //           maxRadius: 30,
-        //
-        //         ),
-        //       ),
-        //       ListTile(
-        //         leading: Icon(Icons.home),
-        //         title: Text("Home"),
-        //         onTap: (){},
-        //       ),
-        //       ListTile(
-        //         leading: Icon(Icons.person),
-        //         title: Text("profile"),
-        //         onTap: (){},
-        //       ),
-        //       ListTile(
-        //         leading: Icon(Icons.settings),
-        //         title: Text("Setting"),
-        //         onTap: (){},
-        //       ),
-        //       ListTile(
-        //         leading: Icon(Icons.exit_to_app),
-        //         title: Text("Logout"),
-        //         onTap: (){
-        //           logout();
-        //         },
-        //       )
-        //     ],
-        //   ),
-        // ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: firstOrg
             ? FloatingActionButton(
@@ -214,9 +148,6 @@ class _MainPageState extends State<MainPage> {
                 onPressed: () {
                   Navigator.pushNamed(context, '/addTask');
                 },
-                // onPressed: firstOrg?(){
-                //   Navigator.pushNamed(context, '/addTask');
-                // }:null,
               )
             : null,
         body: TabBarView(
@@ -233,7 +164,6 @@ class _MainPageState extends State<MainPage> {
 
   void logout() async {
     BottomLoader bl;
-
     bl = new BottomLoader(
       context,
       showLogs: true,
@@ -243,20 +173,15 @@ class _MainPageState extends State<MainPage> {
       message: 'Please wait...',
     );
     bl.display();
-    var res = await Network().getData('/logout');
+    var res = await Network().getMethodWithToken('/logout');
     var body = json.decode(res.body);
 
     if (body['status'] == '1') {
       SharedPreferences localStorage = await SharedPreferences.getInstance();
-      localStorage.remove('user');
       localStorage.remove('token');
-      localStorage.remove('allData');
-      final prefs = await SharedPreferences.getInstance();
-      prefs.remove('orgid');
-      prefs.remove('unAssignedcategory');
-      prefs.remove('unAssignedproject');
+      localStorage.remove('personData');
+      localStorage.remove('active_org');
       bl.close();
-
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => CheckAuth()));
     }

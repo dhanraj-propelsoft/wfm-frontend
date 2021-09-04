@@ -52,7 +52,7 @@ class _distnictOTPState extends State<distnictOTP> {
       'mobile_no' : widget.mobileno,
       'first_name': "text"
     };
-    var res = await Network().authData(data, '/sendOtpPerson');
+    var res = await Network().postMethodWithOutToken(data, '/sendOtpPerson');
     var body = json.decode(res.body);
 
     if(body['message'] != "SUCCESS"){
@@ -88,7 +88,7 @@ class _distnictOTPState extends State<distnictOTP> {
       'otp':otp.text
     };
     print(otp.text);
-    var res = await Network().authData(data, '/getTmpPersonFile');
+    var res = await Network().postMethodWithOutToken(data, '/getTmpPersonFile');
     var body = json.decode(res.body);
 
     if(body['message'] == "SUCCESS"){
@@ -216,7 +216,7 @@ class _AccountListState extends State<AccountList> {
     );
     bl.display();
     var mobile_no = widget.mobileno;
-    var res = await Network().Mobile_NO_Check('/get_account_list/$mobile_no');
+    var res = await Network().getMethodWithOutToken('/get_account_list/$mobile_no');
     var body = json.decode(res.body);
     print(body);
     if(body['status'] == 1){
@@ -438,7 +438,7 @@ class _EmailOTPState extends State<EmailOTP> {
       'name':widget.name
     };
 
-    var res = await Network().authData(data, '/sendotp_email');
+    var res = await Network().postMethodWithOutToken(data, '/sendotp_email');
     var body = json.decode(res.body);
 
 
@@ -476,7 +476,7 @@ class _EmailOTPState extends State<EmailOTP> {
       'otp':otp.text
     };
 
-    var res = await Network().authData(data, '/verifiy_email_otp');
+    var res = await Network().postMethodWithOutToken(data, '/verifiy_email_otp');
     var body = json.decode(res.body);
     if(body['message'] == "SUCCESS"){
 
@@ -786,7 +786,7 @@ class _distinictAccountCreate1State extends State<distinictAccountCreate1> {
     setState(() {
       _isLoading = true;
     });
-    var res = await Network().Mobile_NO_Check('/finddataByPersonId/$personid');
+    var res = await Network().getMethodWithOutToken('/finddataByPersonId/$personid');
     var body = json.decode(res.body);
 
     if(body['status'] == 1){
@@ -1016,7 +1016,7 @@ class _distinictAccountCreate2State extends State<distinictAccountCreate2> {
     setState(() {
       _isLoading = true;
     });
-    var res = await Network().Mobile_NO_Check('/finddataByPersonId/$personid');
+    var res = await Network().getMethodWithOutToken('/finddataByPersonId/$personid');
     var body = json.decode(res.body);
 
     if(body['status'] == 1){
@@ -1063,7 +1063,7 @@ class _distinictAccountCreate2State extends State<distinictAccountCreate2> {
       'mobile_no':widget.mobileno
     };
 
-    var res = await Network().authData(data, '/createPersonTmpFile');
+    var res = await Network().postMethodWithOutToken(data, '/createPersonTmpFile');
     var body = json.decode(res.body);
 
     if(body['message'] == "SUCCESS") {
@@ -1295,7 +1295,7 @@ class _distnictAccountCreatePasswordSetState extends State<distnictAccountCreate
     };
 
     print(data);
-    var res = await Network().authData(data, '/SignUp');
+    var res = await Network().postMethodWithOutToken(data, '/SignUp');
 
     var body = json.decode(res.body);
     print(body);
@@ -1303,8 +1303,8 @@ class _distnictAccountCreatePasswordSetState extends State<distnictAccountCreate
 
       SharedPreferences localStorage = await SharedPreferences.getInstance();
       localStorage.setString('token', json.encode(body['token']));
-      localStorage.setString('user', json.encode(body['user']));
-      localStorage.setString('allData', json.encode(body));
+      localStorage.setString('personData', json.encode(body['PersonDetail']));
+      localStorage.setInt('active_org', body['active_org']);
 
       Navigator.push(
         context,

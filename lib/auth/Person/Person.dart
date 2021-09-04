@@ -54,7 +54,7 @@ class _EmailVerficationState extends State<EmailVerfication> {
       'mobileNo' : widget.mobileno,
       'email' : email.text
     };
-    var res = await Network().authData(data, '/get_persondetails');
+    var res = await Network().postMethodWithOutToken(data, '/get_persondetails');
     var body = json.decode(res.body);
 
 
@@ -310,7 +310,7 @@ class _AccountCreateOTPState extends State<AccountCreateOTP> {
       'userId' : user_id,
       'otp' : OTP
     };
-    var res = await Network().authData(data, '/OTPVerification');
+    var res = await Network().postMethodWithOutToken(data, '/OTPVerification');
     var body = json.decode(res.body);
 
     // if(body['message'] == "SUCCESS") {
@@ -721,7 +721,7 @@ class _NewAccountCreate1State extends State<NewAccountCreate1> {
     setState(() {
       _isLoading = true;
     });
-    var res = await Network().Mobile_NO_Check('/finddataByPersonId/$personid');
+    var res = await Network().getMethodWithOutToken('/finddataByPersonId/$personid');
     var body = json.decode(res.body);
     if(body['status'] == 1){
       var result = body['data'];
@@ -765,7 +765,7 @@ class _NewAccountCreate1State extends State<NewAccountCreate1> {
           child: Center(
             child: AwesomeLoader(
               loaderType: AwesomeLoader.AwesomeLoader3,
-              color: Colors.blue,
+              color: Colors.orangeAccent,
             ),
           ),
         ),
@@ -944,7 +944,7 @@ class _NewAccountCreate2State extends State<NewAccountCreate2> {
     setState(() {
       _isLoading = true;
     });
-    var res = await Network().Mobile_NO_Check('/finddataByPersonId/$personid');
+    var res = await Network().getMethodWithOutToken('/finddataByPersonId/$personid');
     var body = json.decode(res.body);
     if(body['status'] == 1){
       var result = body['data'];
@@ -991,7 +991,7 @@ class _NewAccountCreate2State extends State<NewAccountCreate2> {
       'mobile_no':widget.mobileno
     };
     print(data);
-    var res = await Network().authData(data, '/createPersonTmpFile');
+    var res = await Network().postMethodWithOutToken(data, '/createPersonTmpFile');
     var body = json.decode(res.body);
 
     if(body['message'] == "SUCCESS") {
@@ -1027,7 +1027,7 @@ class _NewAccountCreate2State extends State<NewAccountCreate2> {
           child: Center(
             child: AwesomeLoader(
               loaderType: AwesomeLoader.AwesomeLoader3,
-              color: Colors.blue,
+              color: Colors.orangeAccent,
             ),
           ),
         ),
@@ -1279,7 +1279,7 @@ class _NewAccountCreateOTPState extends State<NewAccountCreateOTP> {
     };
 
 
-    var res = await Network().authData(data, '/SignUp');
+    var res = await Network().postMethodWithOutToken(data, '/SignUp');
     var body = json.decode(res.body);
 
 
@@ -1348,53 +1348,6 @@ class _AccountCreatePasswordSetState extends State<AccountCreatePasswordSet> {
   bool pwdmatch = false;
   BottomLoader bl;
 
-  // void update_password (userid,pwd,conform_pwd)async{
-  //
-  //   bl = new BottomLoader(
-  //     context,
-  //     showLogs: true,
-  //     isDismissible: true,
-  //   );
-  //   bl.style(
-  //     message: 'Please wait...',
-  //   );
-  //   bl.display();
-  //   var data = {
-  //     'userId' : userid,
-  //     'new_password' : pwd,
-  //     'new_confirm_password':conform_pwd
-  //   };
-  //   var res = await Network().authData(data, '/updatePassword');
-  //   var body = json.decode(res.body);
-  //   // if(body['message'] == "SUCCESS") {
-  //   //   bl.close();
-  //   //   Navigator.push(
-  //   //     context,
-  //   //     new MaterialPageRoute(
-  //   //         builder: (context) => LoginPageTwo()
-  //   //     ),
-  //   //   );
-  //   //   Fluttertoast.showToast(
-  //   //       msg: "Password has been Updated!!",
-  //   //       toastLength: Toast.LENGTH_SHORT,
-  //   //       gravity: ToastGravity.BOTTOM,
-  //   //       // timeInSecForIos: 1,
-  //   //       backgroundColor: Colors.grey,
-  //   //       textColor: Colors.black
-  //   //   );
-  //   //
-  //   // }else{
-  //   //   bl.close();
-  //   //   Fluttertoast.showToast(
-  //   //       msg: "Server error.Contact Admin",
-  //   //       toastLength: Toast.LENGTH_SHORT,
-  //   //       gravity: ToastGravity.BOTTOM,
-  //   //       // timeInSecForIos: 1,
-  //   //       backgroundColor: Colors.grey,
-  //   //       textColor: Colors.black
-  //   //   );
-  //   // }
-  // }
 
   void signup_and_signin() async{
 
@@ -1425,16 +1378,15 @@ class _AccountCreatePasswordSetState extends State<AccountCreatePasswordSet> {
     };
 
 
-    var res = await Network().authData(data, '/SignUp');
+    var res = await Network().postMethodWithOutToken(data, '/SignUp');
 
     var body = json.decode(res.body);
-
     if(body['status'] == 1){
 
       SharedPreferences localStorage = await SharedPreferences.getInstance();
       localStorage.setString('token', json.encode(body['token']));
-      localStorage.setString('user', json.encode(body['user']));
-      localStorage.setString('allData', json.encode(body));
+      localStorage.setString('personData', json.encode(body['PersonDetail']));
+      localStorage.setInt('active_org', body['active_org']);
 
       Navigator.push(
         context,

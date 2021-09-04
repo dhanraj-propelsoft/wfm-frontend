@@ -25,18 +25,14 @@ class _SettingState extends State<Setting> {
 
   get_userdata() async{
     SharedPreferences localStorage = await SharedPreferences.getInstance();
-    var user = localStorage.getString('user');
+    var user = localStorage.getString('personData');
     final res = jsonDecode(user);
     setState(() {
-      Name = res['name'];
-      MobileNo = res['mobile'];
-      Email = res['email'];
+      Name = res['first_name'];
+      MobileNo = res['person_mobile']['mobile_no'];
+      Email = res['person_email']['email'];
     });
-
-
     return false;
-    // print(user['name']);
-    // token = jsonDecode(localStorage.getString('token'));
   }
   @override
   void initState() {
@@ -70,13 +66,7 @@ class _SettingState extends State<Setting> {
                     Container(
 
                       child: Text("$Name\n$MobileNo\n$Email"),
-                      // child: Column(
-                      //   children: [
-                      //     Text("Nova P Felix"),
-                      //     Text("9443447755"),
-                      //     Text("felix@propelsoft.in")
-                      //   ],
-                      // ),
+
                     ),
                     Icon(Icons.arrow_forward_ios_sharp)
                   ],
@@ -121,7 +111,6 @@ class _SettingState extends State<Setting> {
               Image(width: 200,
                   height: 200,
                   image: AssetImage('assets/about_image.png'))
-              // AssetImage('/about_image.png'),
 
             ],
           ),
@@ -161,13 +150,11 @@ class _SettingState extends State<Setting> {
                                 }
                             ),
                             RaisedButton(
-
                               color: Colors.orange,
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                               child: Row(
                                 children: <Widget>[
                                   Text('Yes',style: TextStyle(color: Colors.white,),),
-
                                 ],
                               ),
 
@@ -198,22 +185,16 @@ class _SettingState extends State<Setting> {
       message: 'Please wait...',
     );
     bl.display();
-    var res = await Network().getData('/logout');
+    var res = await Network().postMethodWithToken(false,'/logout');
     var body = json.decode(res.body);
 
     if(body['status'] == '1'){
 
       SharedPreferences localStorage = await SharedPreferences.getInstance();
-      localStorage.remove('user');
       localStorage.remove('token');
-      localStorage.remove('allData');
-      final prefs = await SharedPreferences.getInstance();
-      prefs.remove('orgid');
-      prefs.remove('unAssignedcategory');
-      prefs.remove('unAssignedproject');
+      localStorage.remove('personData');
+      localStorage.remove('active_org');
       bl.close();
-
-
       Navigator.push(
           context,
           MaterialPageRoute(builder: (context)=>CheckAuth()));

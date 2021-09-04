@@ -49,7 +49,7 @@ class _TaskDetailsState extends State<TaskDetails> {
 
 
         var data = {'task_id':widget.id,'follower_id':value};
-        var res = await Network().ProjectStore(data, '/taskfollowerupdate');
+        var res = await Network().postMethodWithToken(data, '/taskfollowerupdate');
         Fluttertoast.showToast(
 
             msg: "Follower has been Updated",
@@ -67,7 +67,7 @@ class _TaskDetailsState extends State<TaskDetails> {
     Future<List> action_changed(int actionId,int statusId,int taskId) async {
 
       var data = {'taskId' : taskId,'actionId':actionId,'statusId':statusId};
-      var res = await Network().ProjectStore(data, '/taskAction');
+      var res = await Network().postMethodWithToken(data, '/taskAction');
       var body = json.decode(res.body);
 
       if(body['status'] == 1){
@@ -147,7 +147,7 @@ class _TaskDetailsState extends State<TaskDetails> {
        loader = true;
      });
      int taskid = widget.id;
-     var res = await Network().projectCreate('/taskDetails/$taskid');
+     var res = await Network().getMethodWithToken('/taskDetails/$taskid');
      var body = json.decode(res.body);
      if(body['status'] == "SUCCESS"){
        var result = body['data'];

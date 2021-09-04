@@ -28,48 +28,27 @@ class _UpdateProjectState extends State<UpdateProject> {
   bool _isLoading = false;
   int seletedOrg;
   int OrganizationId;
+  bool isButtonEnabled = true;
 
-  get_orgId() async{
-    final prefs = await SharedPreferences.getInstance();
-    seletedOrg = prefs.getInt('orgid') ?? 0;
-    SharedPreferences localStorage = await SharedPreferences.getInstance();
-    var Data = jsonDecode(localStorage.getString('allData'));
-    OrganizationId = seletedOrg == 0?Data['firstOrg']:seletedOrg;
-    return OrganizationId;
-  }
 
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
-  _showMsg(msg) {
-    final snackBar = SnackBar(
-      content: Text(msg),
-      action: SnackBarAction(
-        label: 'close',
-        onPressed: () {
-
-          // Some code to undo the change!
-        },
-      ),
-    );
-    _scaffoldKey.currentState.showSnackBar(snackBar);
-  }
 
   Future<String> _projectData() async {
     setState(() {
       _isLoading = true;
     });
     int projectid = widget.id;
-    final orgId = await get_orgId();
+    int orgId = await Network().GetActiveOrg();
 
-    var res = await Network().projectCreate('/projectEdit/$projectid/$orgId');
+    var res = await Network().getMethodWithToken('/projectEdit/$projectid/$orgId');
     var body = json.decode(res.body);
+
     if(body['status'] == 1){
       var result = body['data'];
+
       setState(() {
+
         employeeList = result['pEmployeeDatas'];
         categoryList = result['pCategoryDatas'];
-        // print(employeeList);
-        // print(result);
-
         seletedemployee = (result["pProjectOwner"] != 0)?result["pProjectOwner"]:seletedemployee;
         seletedcategory = (result["pCategoryId"] != 0)?result["pCategoryId"]:seletedcategory;
         Name.text = result["pName"];
@@ -78,6 +57,18 @@ class _UpdateProjectState extends State<UpdateProject> {
         DuedateController.text = result['pDeadlineDate'];
         _isLoading = false;
       });
+    }else{
+      setState(() {
+        _isLoading = false;
+      });
+      Fluttertoast.showToast(
+          msg: "Server Error,Contact Admin..",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          // timeInSecForIos: 1,
+          backgroundColor: Colors.grey[200],
+          textColor: Colors.black
+      );
     }
 
 
@@ -87,12 +78,11 @@ class _UpdateProjectState extends State<UpdateProject> {
     setState(() {
       _isLoading = true;
     });
-    final orgId = await get_orgId();
+    int orgId = await Network().GetActiveOrg();
     int projectid = widget.id;
     var data = {'pName' : name,'pDetails':Details,'pProjectOwner':employee,'pCategoryId':category,'pStartDate':StartDate,'pDeadlineDate':EndDate,'orgId':orgId};
-    var res = await Network().ProjectStore(data, '/projectUpdate/$projectid');
+    var res = await Network().postMethodWithToken(data, '/projectUpdate/$projectid');
     var body = json.decode(res.body);
-
     if(body['status'] == 1){
       Navigator.push(context,
           MaterialPageRoute(
@@ -119,28 +109,6 @@ class _UpdateProjectState extends State<UpdateProject> {
     _projectData();
   }
   @override
-  // void addproject() async{
-  //   int projectid = widget.id;
-  //   SharedPreferences localStorage = await SharedPreferences.getInstance();
-  //   var loginData = jsonDecode(localStorage.getString('allData'));
-  //   var res = await Network().projectEdit('/projectEdit/$projectid');
-  //   var body = json.decode(res.body);
-  //   print(body);
-  //   if(body['status'] == 1){
-  //     var result = body['data'];
-  //     setState(() {
-  //       employees = result['pEmployeeDatas'];
-  //       category = result['pCategoryDatas'];
-  //       seletedemployee = result["pProjectOwner"];
-  //       seletedcategory = result["pCategoryId"];
-  //       Name.text = result["pName"];
-  //       Details.text = result["pDetails"];
-  //       CreateddateController.text = result['pStartDate'];
-  //       DuedateController.text = result['pDeadlineDate'];
-  //     });
-  //   }
-  // }
-
 
 
 
@@ -152,14 +120,13 @@ class _UpdateProjectState extends State<UpdateProject> {
           child: Center(
             child: AwesomeLoader(
               loaderType: AwesomeLoader.AwesomeLoader3,
-              color: Colors.blue,
+              color: Colors.orangeAccent,
             ),
           ),
         ),
       );
     }else {
       return Scaffold(
-        key: _scaffoldKey,
         appBar: AppBar(title: Text("Update Project",style: TextStyle(color: Colors.white),),
           leading: IconButton(icon: Icon(Icons.arrow_back,color: Colors.white,),onPressed: (){
             Navigator.of(context).pop();
@@ -172,8 +139,21 @@ class _UpdateProjectState extends State<UpdateProject> {
                 Container(
                   padding: EdgeInsets.only(left: 15, right: 15),
                   child: TextField(
+                    onChanged:(val){
+
+                      if (val.trim().isEmpty){
+                        setState(() {
+                          isButtonEnabled = false;
+                        });
+                      }else{
+                        setState(() {
+                          isButtonEnabled = true;
+                        });
+                      }
+
+                    },
                     obscureText: false,
-                    // maxLines: 3,
+
                     decoration: InputDecoration(
 
                       hintText: "Enter Project Name",
@@ -215,13 +195,11 @@ class _UpdateProjectState extends State<UpdateProject> {
                             alignedDropdown: true,
                             child: DropdownButton(
                               value: seletedemployee,
-
                               hint: Text('Project Owner'),
                               items: employeeList?.map((item) {
                                 return new DropdownMenuItem(
-                                  child: new Text(
-                                      item['first_name'].toString()),
-                                  value: int.parse(item['person_id']),
+                                  child: new Text(item['person']['first_name']),
+                                  value: item['person']['id'],
                                 );
                               })?.toList() ??
                                   [],
@@ -242,9 +220,10 @@ class _UpdateProjectState extends State<UpdateProject> {
 
                               hint: Text('UnAssigned Category'),
                               items: categoryList?.map((item) {
+
                                 return new DropdownMenuItem(
-                                  child: new Text(item['name'].toString()),
-                                  value: item['id'],
+                                  child: Text(item['pName']),
+                                  value: item['pId'],
                                 );
                               })?.toList() ??
                                   [],
@@ -315,7 +294,13 @@ class _UpdateProjectState extends State<UpdateProject> {
                               print(EndDate.compareTo(startDate));
                               if(EndDate.compareTo(startDate) < 0)
                               {
-                                _showMsg("Start Date should not be greater than End Date.");
+                                Fluttertoast.showToast(
+                                    msg: "Start Date should not be greater than End Date.",
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.BOTTOM,
+                                    // timeInSecForIos: 1,
+                                    backgroundColor: Colors.grey,
+                                    textColor: Colors.black);
                                 setState(() {
                                   DuedateController.text = "";
                                 });
@@ -325,7 +310,6 @@ class _UpdateProjectState extends State<UpdateProject> {
                       ],
                     )
                 ),
-
                 SizedBox(
                   height: 50,
                 ),
@@ -349,18 +333,12 @@ class _UpdateProjectState extends State<UpdateProject> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         color: Colors.green,
                         child: Text('Update'),
-                        onPressed: () {
-                          setState(() {
-                            Name.text.isEmpty ? _valName = true : _valName =
-                            false;
-                            if (_valName == false) {
-                              projectUpdate(
-                                  Name.text, Details.text, seletedemployee,
-                                  seletedcategory, CreateddateController.text,
-                                  DuedateController.text);
-                            }
-                          });
-                        },
+                        onPressed: isButtonEnabled?() {
+                          projectUpdate(
+                              Name.text, Details.text, seletedemployee,
+                              seletedcategory, CreateddateController.text,
+                              DuedateController.text);
+                        }:null,
                       )
                     ]
 

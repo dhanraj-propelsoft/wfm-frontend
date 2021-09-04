@@ -8,9 +8,7 @@ import 'dart:convert';
 import 'package:awesome_loader/awesome_loader.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bottom_loader/bottom_loader.dart';
-
 
 
 class TaskList extends StatefulWidget {
@@ -31,50 +29,29 @@ class _TaskListState extends State<TaskList> {
   int OrganizationId;
   bool unAssignedcategory;
   bool unAssignedProject;
-  bool _showAppbar = true; //this is to show app bar
-  ScrollController _scrollBottomBarController = new ScrollController(); // set controller on scrolling
-  bool isScrollingDown = false;
-  bool _show = true;
-  void showBottomBar() {
-    setState(() {
-      _show = true;
-    });
-  }
-  void hideBottomBar() {
-    setState(() {
-      _show = false;
-    });
-  }
-
-
-  get_orgId() async{
-    final prefs = await SharedPreferences.getInstance();
-    seletedOrg = prefs.getInt('orgid') ?? 0;
-    SharedPreferences localStorage = await SharedPreferences.getInstance();
-    var Data = jsonDecode(localStorage.getString('allData'));
-    if(seletedOrg == 0){
-      OrganizationId = Data['firstOrg'];
-    }else{
-      OrganizationId = seletedOrg;
-    }
-    return OrganizationId;
-  }
-
 
   Future<List> taskData() async {
-    final orgId = await get_orgId();
-    final prefs = await SharedPreferences.getInstance();
-    unAssignedcategory = prefs.getBool('unAssignedcategory') == null?true:prefs.getBool('unAssignedcategory');
-    unAssignedProject = prefs.getBool('unAssignedproject') == null?true:prefs.getBool('unAssignedproject');
-    var res = await Network().taskList('/Dashboard/$orgId');
+    int orgId = await Network().GetActiveOrg();
+    if(orgId != 0) {
+      var res = await Network().getMethodWithToken('/taskList/$orgId');
+      var body = json.decode(res.body);
 
-    var body = json.decode(res.body);
-    return [];
-    //after organizational unhide
-    // if(body['status'] == 1){
-    //   var result = body['data'];
-    //   return result;
-    // }
+      if (body['status'] == 1) {
+        var result = body['data'];
+        return result;
+      } else {
+        Fluttertoast.showToast(
+            msg: "Server Error,Contact Admin",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.grey[200],
+            textColor: Colors.black
+        );
+      }
+    }else{
+      return [];
+    }
+
   }
 
   Future<List> action_changed(int actionId,int statusId,int taskId) async {
@@ -88,7 +65,7 @@ class _TaskListState extends State<TaskList> {
     );
     bl.display();
     var data = {'taskId' : taskId,'actionId':actionId,'statusId':statusId};
-    var res = await Network().ProjectStore(data, '/taskAction');
+    var res = await Network().postMethodWithToken(data, '/taskAction');
     var body = json.decode(res.body);
     if(body['status'] == 1){
       Fluttertoast.showToast(
@@ -107,14 +84,10 @@ class _TaskListState extends State<TaskList> {
     }
 
   }
-  void myScroll() async {
 
-
-  }
   @override
   void initState() {
     myFuture = taskData();
-    myScroll();
     super.initState();
   }
 
@@ -138,34 +111,26 @@ class _TaskListState extends State<TaskList> {
                           Text("To Add Task, tap",style: TextStyle(fontSize: 15.0),),
                           Icon(Icons.post_add_rounded,color: Colors.grey,),
                           Text("at the bottom of your screen.",style: TextStyle(fontSize: 15.0),),
-                        ],
-                                    ),
+                        ],),
                   ),
                 );
               }else {
                 return Scaffold(
                   body: SingleChildScrollView(
                     child: GestureDetector(
-
                       child: Container(
                         padding: EdgeInsets.only(top: 05, right: 05),
                         child: Column(
                           children: <Widget>[
                             ListView.builder(
-                              controller: _scrollBottomBarController,
                               key: Key('builder ${selected.toString()}'),
                               itemCount: snapshot.data.length,
                               shrinkWrap: true,
-
                               physics: NeverScrollableScrollPhysics(),
                               itemBuilder: (context, i) {
-
-
                                 var now = new DateTime.now();
                                 var formatter = new DateFormat('yyyy-MM-dd');
-                                final todayDate = formatter.format(now);
-
-
+                                final todayDate = formatter.format(now);  
                                 String Date = snapshot.data[i]['pStartDate']+'  to  '+snapshot.data[i]['pEndDate'];
                                 final StartingDate = DateTime.parse(snapshot.data[i]['pEndDate']);
                                 final EndDate = DateTime.parse(todayDate);
@@ -612,7 +577,6 @@ class _TaskListState extends State<TaskList> {
                 ),
               );
             }
-
           }
           ),
     );

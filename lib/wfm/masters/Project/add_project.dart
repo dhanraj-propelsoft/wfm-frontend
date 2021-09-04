@@ -30,58 +30,11 @@ class _AddProjectState extends State<AddProject> {
   int OrganizationId;
   bool isButtonEnabled = false;
 
-  get_orgId() async{
-    final prefs = await SharedPreferences.getInstance();
-    seletedOrg = prefs.getInt('orgid') ?? 0;
-    SharedPreferences localStorage = await SharedPreferences.getInstance();
-    var Data = jsonDecode(localStorage.getString('allData'));
-    OrganizationId = seletedOrg == 0?Data['firstOrg']:seletedOrg;
-    return OrganizationId;
-  }
 
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
-  _showMsg(msg) {
-    final snackBar = SnackBar(
-      content: Text(msg),
-      action: SnackBarAction(
-        label: 'close',
-        onPressed: () {
-
-          // Some code to undo the change!
-        },
-      ),
-    );
-    _scaffoldKey.currentState.showSnackBar(snackBar);
-  }
-
-  // var formattedDate = ${todayDate.day}-${todayDate.month}-${todayDate.year}";
 
   void initState() {
-    super.initState();
     _projectData();
-    var now = new DateTime.now();
-    var formatter = new DateFormat('yyyy-MM-dd');
-    // String formattedTime = DateFormat('kk:mm:a').format(now);
-    String formattedDate = formatter.format(now);
-    // print(formattedTime);
-    // print(formattedDate);
-    // var temp = DateTime.now().toUtc();
-    // var d1 = DateTime.utc(temp.year,temp.month,temp.day);
-    // print(d1);
-    // var d1= DateTime.utc(2021,04,25);
-    // var d2 = DateTime.utc(2021,05,25);
-    // print(d1);
-    // print(d2);
-    // if(d2.compareTo(d1)==0){
-    //   print('true');
-    // }else{
-    //   print('false');
-    // }
-
-    // final birthday = DateTime(2021, 05, 19);
-    // final date2 = DateTime.now();
-    // final difference = date2.difference(birthday).inDays;
-    // print(difference);
+    super.initState();
 
   }
 
@@ -90,41 +43,39 @@ class _AddProjectState extends State<AddProject> {
     setState(() {
       _isLoading = true;
     });
-    SharedPreferences localStorage = await SharedPreferences.getInstance();
-    var Data = jsonDecode(localStorage.getString('allData'));
-    final orgId = await get_orgId();
-    var res = await Network().projectCreate('/projectCreate/$orgId');
+    int orgId = await Network().GetActiveOrg();
+    var res = await Network().getMethodWithToken('/projectCreate/$orgId');
     var body = json.decode(res.body);
 
+    // print(body);
     if(body['status'] == 1){
       var result = body['data'];
       // var formattedDate ="${todayDate.year}-${todayDate.month}-${todayDate.day}";
       var now = new DateTime.now();
       var formatter = new DateFormat('yyyy-MM-dd');
       String todayDate = formatter.format(now);
-
+      // result['pEmployeeDatas'].forEach((item) => print(item['person']));
       setState(() {
+
         employeeList = result['pEmployeeDatas'];
         categoryList = result['pCategoryDatas'];
         CreateddateController.text = todayDate;
         DuedateController.text = "Lifetime";
-
-        seletedemployee = int.parse(Data['person_id']);
+        _isLoading = false;
+        // seletedemployee = int.parse(Data['person_id']);
       });
+
     }
-    setState(() {
-      _isLoading = false;
-    });
+
   }
 
   Future projectSave(String name,String Details,int employee,int category,String StartDate,String EndDate) async {
     setState(() {
       _isLoading = true;
     });
-    final orgId = await get_orgId();
-    print(orgId);
+    int orgId = await Network().GetActiveOrg();
     var data = {'pName' : name,'pDetails':Details,'pProjectOwner':employee,'pCategoryId':category,'pStartDate':StartDate,'pDeadlineDate':EndDate,'orgId':orgId};
-    var res = await Network().ProjectStore(data, '/projectStore');
+    var res = await Network().postMethodWithToken(data, '/projectStore');
     var body = json.decode(res.body);
     print(body);
     if(body['status'] == 1){
@@ -145,6 +96,18 @@ class _AddProjectState extends State<AddProject> {
           backgroundColor: Colors.grey[200],
           textColor: Colors.black
       );
+    }else{
+      setState(() {
+        _isLoading = false;
+      });
+      Fluttertoast.showToast(
+          msg: "Server Error,Contact Admin..",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          // timeInSecForIos: 1,
+          backgroundColor: Colors.grey[200],
+          textColor: Colors.black
+      );
     }
   }
 
@@ -155,14 +118,13 @@ class _AddProjectState extends State<AddProject> {
           child: Center(
             child: AwesomeLoader(
               loaderType: AwesomeLoader.AwesomeLoader3,
-              color: Colors.blue,
+              color: Colors.orangeAccent,
             ),
           ),
         ),
       );
     }else {
       return Scaffold(
-        key: _scaffoldKey,
         appBar: AppBar(title: Text("Add Project",style: TextStyle(color: Colors.white),),
           leading: IconButton(icon: Icon(Icons.arrow_back,color: Colors.white,),onPressed: (){
             Navigator.of(context).pop();
@@ -176,7 +138,6 @@ class _AddProjectState extends State<AddProject> {
                   padding: EdgeInsets.only(left: 15, right: 15),
                   child: TextField(
                     obscureText: false,
-                    // maxLines: 3,
                     onChanged:(val){
 
                       if (val.trim().isEmpty){
@@ -221,39 +182,25 @@ class _AddProjectState extends State<AddProject> {
                   ),
 
                 ),
-                // Container(
-                //   padding: EdgeInsets.only(left: 15, right: 15,top: 15),
-                //   child: Row(
-                //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //     children: [
-                //       Text("Project Owner",style: TextStyle(color: Colors.grey),),
-                //       Text("Category",style: TextStyle(color: Colors.grey),)
-                //     ],
-                //   ),
-                // ),
+
                 Container(
                   // padding: EdgeInsets.only(top: 10.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
 
+
                         DropdownButtonHideUnderline(
                           child: ButtonTheme(
                             alignedDropdown: true,
                             child: DropdownButton(
                               value: seletedemployee,
-                              // iconSize: 30,
-                              // icon: (null),
-                              // style: TextStyle(
-                              //   color: Colors.black54,
-                              //   fontSize: 16,
-                              // ),
+
                               hint: Text('Project Owner'),
                               items: employeeList?.map((item) {
                                 return new DropdownMenuItem(
-                                  child: new Text(
-                                      item['first_name'].toString()),
-                                      value: int.parse(item['person_id']),
+                                  child: new Text(item['person']['first_name']),
+                                      value: item['person']['id'],
                                 );
                               })?.toList() ??
                                   [],
@@ -271,24 +218,19 @@ class _AddProjectState extends State<AddProject> {
                             alignedDropdown: true,
                             child: DropdownButton(
                               value: seletedcategory,
-                              // iconSize: 30,
-                              // icon: (null),
-                              // style: TextStyle(
-                              //   color: Colors.black54,
-                              //   fontSize: 16,
-                              // ),
+
                               hint: Text('UnAssigned Category'),
                               items: categoryList?.map((item) {
                                 return new DropdownMenuItem(
-                                  child: new Text(item['name'].toString()),
-                                  value: item['id'],
+                                  child: Text(item['pName']),
+                                  value: item['pId'],
                                 );
-                              })?.toList() ??
-                                  [],
+                              })?.toList() ?? [],
                               onChanged: (newValue) {
                                 setState(() {
                                   seletedcategory = newValue;
                                 });
+
                               },
                             ),
                           ),
@@ -351,7 +293,14 @@ class _AddProjectState extends State<AddProject> {
                               print(EndDate.compareTo(startDate));
                               if(EndDate.compareTo(startDate) < 0)
                               {
-                                _showMsg("Start Date should not be greater than End Date.");
+                                Fluttertoast.showToast(
+                                    msg: "Start Date should not be greater than End Date.",
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.BOTTOM,
+                                    // timeInSecForIos: 1,
+                                    backgroundColor: Colors.grey,
+                                    textColor: Colors.black);
+
                                 setState(() {
                                   DuedateController.text = "";
                                 });
@@ -362,57 +311,14 @@ class _AddProjectState extends State<AddProject> {
                       ],
                     )
                 ),
-                // Container(
-                //   padding: EdgeInsets.only(left: 15, right: 15),
-                //   child: TextField(
-                //     obscureText: false,
-                //     decoration: InputDecoration(
-                //       // contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                //       //   hintText: "Attachment",
-                //         suffixIcon: Icon(Icons.attach_file)
-                //       // border:
-                //       // OutlineInputBorder(borderRadius: BorderRadius.circular(10.0))
-                //     ),
-                //
-                //   ),
-                //
-                // ),
+
                 SizedBox(
                   height: 50,
                 ),
 
                 ButtonBar(
                     children: <Widget>[
-                      // RaisedButton(
-                      //   color: Colors.red,
-                      //   child: Text('Clear'),
-                      //   onPressed: () {
-                      //     Name.clear();
-                      //     Details.clear();
-                      //     // CreateddateController.clear();
-                      //     // DuedateController.clear();
-                      //     setState(() {
-                      //       seletedcategory = null;
-                      //     });
-                      //
-                      //   },
-                      // ),
-                      // RaisedButton(
-                      //   color: Colors.green,
-                      //   child: Text('Save'),
-                      //   onPressed: () {
-                      //     setState(() {
-                      //       Name.text.isEmpty ? _valName = true : _valName =
-                      //       false;
-                      //       if (_valName == false) {
-                      //         projectSave(
-                      //             Name.text, Details.text, seletedemployee,
-                      //             seletedcategory, CreateddateController.text,
-                      //             DuedateController.text);
-                      //       }
-                      //     });
-                      //   },
-                      // )
+
                       RaisedButton(
                         color: Colors.blue,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -462,29 +368,12 @@ class _AddProjectState extends State<AddProject> {
                           ],
                         ),
                         onPressed:isButtonEnabled?(){
-                            setState(() {
-                                  Name.text.isEmpty ? _valName = true : _valName =
-                                  false;
-                                  if (_valName == false) {
-                                    projectSave(
-                                        Name.text, Details.text, seletedemployee,
-                                        seletedcategory, CreateddateController.text,
-                                        DuedateController.text);
-                                  }
-                                });
+                          projectSave(
+                              Name.text, Details.text, seletedemployee,
+                              seletedcategory, CreateddateController.text,
+                              DuedateController.text);
                         }:null,
-                        // onPressed: (){
-                        //   Name.clear();
-                        //   Details.clear();
-                        //   // CreateddateController.clear();
-                        //   // DuedateController.clear();
-                        //   setState(() {
-                        //     seletedcategory = null;
-                        //     seletedproject = null;
-                        //     Assignedtoemployee = null;
-                        //     _selected_followers.clear();
-                        //   });
-                        // }
+
                       ),
                     ]
 

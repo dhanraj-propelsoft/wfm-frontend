@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:propel/main_page.dart';
 import 'package:http/http.dart' as http;
 import 'package:propel/network_utils/api.dart';
-import 'package:propel/wfm/task/task_list.dart';
+import 'package:propel/wfm/task/task.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:bottom_loader/bottom_loader.dart';
@@ -38,7 +38,7 @@ class _WrongPasswordState extends State<WrongPassword> {
     //
     // var res = await Network().authData(data, '/sendOtpForgetPassword');
     var data = {"email_id":widget.email,"name":widget.name};
-    var res = await Network().authData(data, '/sendotp_email');
+    var res = await Network().postMethodWithOutToken(data, '/sendotp_email');
     var body = json.decode(res.body);
 
 
@@ -133,7 +133,7 @@ class _OTPState extends State<OTP> {
 
   @override
   void initState() {
-    print(widget.email);
+
     var number = getPayCardStr(widget.email);
 
     setState(() {
@@ -208,16 +208,11 @@ class _OTPState extends State<OTP> {
       message: 'Please wait...',
     );
     bl.display();
-    // var data = {
-    //   'userId' : user_id,
-    //   'otp' : OTP
-    // };
-    // var res = await Network().authData(data, '/OTPVerification');
     var data = {
       'email_id' : widget.email,
       'otp':otp.text
     };
-    var res = await Network().authData(data, '/verifiy_email_otp');
+    var res = await Network().postMethodWithOutToken(data, '/verifiy_email_otp');
     var body = json.decode(res.body);
 
     if(body['message'] == "SUCCESS") {
@@ -279,7 +274,7 @@ class _Forgot_PasswordState extends State<Forgot_Password> {
       'userId' : userid,
       'password' : pwd,
     };
-    var res = await Network().authData(data, '/updatePassword_and_login');
+    var res = await Network().postMethodWithOutToken(data, '/updatePassword_and_login');
     var body = json.decode(res.body);
 
 
@@ -287,8 +282,8 @@ class _Forgot_PasswordState extends State<Forgot_Password> {
 
       SharedPreferences localStorage = await SharedPreferences.getInstance();
       localStorage.setString('token', json.encode(body['token']));
-      localStorage.setString('user', json.encode(body['user']));
-      localStorage.setString('allData', json.encode(body));
+      localStorage.setString('personData', json.encode(body['PersonDetail']));
+      localStorage.setInt('active_org', body['active_org']);
       bl.close();
       Navigator.push(
         context,

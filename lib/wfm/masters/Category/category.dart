@@ -27,51 +27,40 @@ class _categoryState extends State<category> {
   BottomLoader bl;
 
   get_orgId() async{
-    final prefs = await SharedPreferences.getInstance();
-    seletedOrg = prefs.getInt('orgid') ?? 0;
-    SharedPreferences localStorage = await SharedPreferences.getInstance();
-    var Data = jsonDecode(localStorage.getString('allData'));
-    if(seletedOrg == 0){
-      // if(Data['firstOrg'] == 0){
-      //   setState(() {
-      //     firstorg = false;
-      //   });
-      // }else{
-      //   setState(() {
-      //     firstorg = true;
-      //   });
-      // }
-      OrganizationId = Data['firstOrg'];
+    int org_id = await Network().GetActiveOrg();
 
-    }else{
-      OrganizationId = seletedOrg;
+    if(org_id != 0){
+        setState(() {
+            firstorg = true;
+          });
     }
-
-    if(OrganizationId != 0){
-      setState(() {
-        firstorg = true;
-      });
-    }
-
-    return OrganizationId;
+    return org_id;
   }
 
-  Future<List> categoryData() async {
-    final prefs = await SharedPreferences.getInstance();
-    final orgId = await get_orgId();
-    var res = await Network().categoryList('/CategoryList/$orgId');
-    var body = json.decode(res.body);
 
-    return [];
-    // after organizations unhide
-    // if(body['status'] == 1){
-    //   var result = body['data'];
-    //   setState(() {
-    //     isSwitched = body['selectall'];
-    //     switchList = result;
-    //   });
-    //   return result;
-    // }
+  Future<List> categoryData() async {
+    final orgId = await get_orgId();
+
+    var res = await Network().getMethodWithToken('/CategoryList/$orgId');
+    var body = json.decode(res.body);
+    if(body['status'] == 1){
+      var result = body['data'];
+      setState(() {
+        isSwitched = body['selectall'];
+        switchList = result;
+      });
+      return result;
+    }else{
+
+      Fluttertoast.showToast(
+          msg: "Server Error,Contact Admin",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.grey[200],
+          textColor: Colors.black
+      );
+    }
+
   }
 
   Future<List> _onchanged(bool value,int index,int id) async {
@@ -89,7 +78,7 @@ class _categoryState extends State<category> {
 
     var data = {'id' : id,'status':value?1:0};
 
-    var res = await Network().ProjectStore(data, '/CategoryStatusChg');
+    var res = await Network().postMethodWithToken(data, '/CategoryStatusChg');
     var body = json.decode(res.body);
 
     if(body['status'] == 1){
@@ -123,7 +112,7 @@ class _categoryState extends State<category> {
     bl.display();
     final user = await categoryData();
     var data = {'status':value,'id':user};
-    var res = await Network().ProjectStore(data, '/CategorySelectAll');
+    var res = await Network().postMethodWithToken(data, '/CategorySelectAll');
     var body = json.decode(res.body);
 
     if(body['status'] == 1){

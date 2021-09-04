@@ -27,40 +27,30 @@ class _projectState extends State<project> {
 
 
   get_orgId() async{
+    int org_id = await Network().GetActiveOrg();
 
-    final prefs = await SharedPreferences.getInstance();
-    seletedOrg = prefs.getInt('orgid') ?? 0;
-    SharedPreferences localStorage = await SharedPreferences.getInstance();
-    var Data = jsonDecode(localStorage.getString('allData'));
-    if(seletedOrg == 0){
-      OrganizationId = Data['firstOrg'];
-    }else{
-      OrganizationId = seletedOrg;
-    }
-    if(OrganizationId != 0){
+    if(org_id != 0){
       setState(() {
         firstorg = true;
       });
     }
-    return OrganizationId;
+    return org_id;
   }
 
 
   Future<List> projectData() async {
     final orgId = await get_orgId();
-    var res = await Network().projectList('/projectList/$orgId');
+    var res = await Network().getMethodWithToken('/projectList/$orgId');
     var body = json.decode(res.body);
 
-      return [];
-    //  after organizations hide
-    // if(body['status'] == 1){
-    //   var result = body['data'];
-    //   setState(() {
-    //     isSwitched = body['selectall'];
-    //     switchList = result;
-    //   });
-    //   return result;
-    // }
+    if(body['status'] == 1){
+      var result = body['data'];
+      setState(() {
+        isSwitched = body['selectall'];
+        switchList = result;
+      });
+      return result;
+    }
   }
 
   Future<List> _onchanged(bool value,int index,int id) async {
@@ -75,15 +65,13 @@ class _projectState extends State<project> {
     bl.display();
     var data = {'id' : id,'status':value?1:0};
 
-    var res = await Network().ProjectStore(data, '/ProjStatusChg');
+    var res = await Network().postMethodWithToken(data, '/ProjStatusChg');
     var body = json.decode(res.body);
     if(body['status'] == 1){
       Fluttertoast.showToast(
-
           msg: body['data'],
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
-
           backgroundColor: Colors.grey[200],
           textColor: Colors.black
       );
@@ -105,7 +93,7 @@ class _projectState extends State<project> {
     bl.display();
     final user = await projectData();
     var data = {'status':value,'id':user};
-    var res = await Network().ProjectStore(data, '/ProjSelectAll');
+    var res = await Network().postMethodWithToken(data, '/ProjSelectAll');
     var body = json.decode(res.body);
 
     if(body['status'] == 1){

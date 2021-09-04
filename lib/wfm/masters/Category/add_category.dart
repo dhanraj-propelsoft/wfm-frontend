@@ -14,30 +14,22 @@ class AddCategory extends StatefulWidget {
 
 class _AddCategoryState extends State<AddCategory> {
   final txtName = new TextEditingController();
-  bool _valName = false;
   bool _isLoading = false;
   int seletedOrg;
-  int OrganizationId;
   bool isButtonEnabled = false;
 
 
-  get_orgId() async{
-    final prefs = await SharedPreferences.getInstance();
-    seletedOrg = prefs.getInt('orgid') ?? 0;
-    SharedPreferences localStorage = await SharedPreferences.getInstance();
-    var Data = jsonDecode(localStorage.getString('allData'));
-    OrganizationId = seletedOrg == 0?Data['firstOrg']:seletedOrg;
-    return OrganizationId;
-  }
+
 
 
   Future categorySave(String name) async {
     setState(() {
       _isLoading = true;
     });
-    final orgId = await get_orgId();
+    int orgId = await Network().GetActiveOrg();
     var data = {'pName' : name,'orgId':orgId};
-    var res = await Network().categorySave(data, '/CategoryStore');
+
+    var res = await Network().postMethodWithToken(data, '/CategoryStore');
     var body = json.decode(res.body);
     if(body['status'] == 1){
 
@@ -58,6 +50,17 @@ class _AddCategoryState extends State<AddCategory> {
           backgroundColor: Colors.grey[200],
           textColor: Colors.black
       );
+    }else{
+      setState(() {
+        _isLoading = false;
+      });
+      Fluttertoast.showToast(
+          msg: "Server Error,Contact Admin",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.grey[200],
+          textColor: Colors.black
+      );
     }
   }
 
@@ -69,7 +72,7 @@ class _AddCategoryState extends State<AddCategory> {
           child: Center(
             child: AwesomeLoader(
               loaderType: AwesomeLoader.AwesomeLoader3,
-              color: Colors.blue,
+              color: Colors.orangeAccent,
             ),
           ),
         ),
@@ -104,7 +107,6 @@ class _AddCategoryState extends State<AddCategory> {
                   hintStyle: TextStyle(fontSize: 17.0),
                   labelText: 'Category',
                   labelStyle: TextStyle(fontSize: 17.0),
-                  errorText: _valName ? "Category is required" : null,
                 ),
                 controller: txtName,
               ),

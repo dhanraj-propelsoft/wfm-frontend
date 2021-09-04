@@ -35,7 +35,7 @@ class _LoginPageState extends State<LoginPage> {
     bl.display();
 
     var res =
-        await Network().Mobile_NO_Check('/getPersonByMobileNo/$mobile_no');
+        await Network().getMethodWithOutToken('/getPersonByMobileNo/$mobile_no');
     var body = json.decode(res.body);
 
     if (body['message'] == "SUCCESS") {
@@ -210,14 +210,14 @@ class _LoginPageTwoState extends State<LoginPageTwo> {
 
     var data = {'mobile': widget.mobileno, 'password': password.text};
 
-    var res = await Network().authData(data, '/wfmlogin');
+    var res = await Network().postMethodWithOutToken(data, '/wfmlogin');
     var body = json.decode(res.body);
 
     if (body['status'] == 1) {
       SharedPreferences localStorage = await SharedPreferences.getInstance();
       localStorage.setString('token', json.encode(body['token']));
-      localStorage.setString('user', json.encode(body['user']));
-      localStorage.setString('allData', json.encode(body));
+      localStorage.setString('personData', json.encode(body['PersonDetail']));
+      localStorage.setInt('active_org', body['active_org']);
       bl.close();
       Navigator.push(
         context,
