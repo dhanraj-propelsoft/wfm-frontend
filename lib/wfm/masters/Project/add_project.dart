@@ -52,7 +52,7 @@ class _AddProjectState extends State<AddProject> {
       var result = body['data'];
       // var formattedDate ="${todayDate.year}-${todayDate.month}-${todayDate.day}";
       var now = new DateTime.now();
-      var formatter = new DateFormat('yyyy-MM-dd');
+      var formatter = new DateFormat('dd-MM-yyyy');
       String todayDate = formatter.format(now);
       // result['pEmployeeDatas'].forEach((item) => print(item['person']));
       setState(() {
@@ -257,12 +257,15 @@ class _AddProjectState extends State<AddProject> {
                                     Icons.calendar_today_rounded, size: 18.0)
                             ),
                             onTap: () async {
+                              final DateFormat formatter = DateFormat('dd-MM-yyyy');
                               var date = await showDatePicker(
                                   context: context,
                                   initialDate: DateTime.now(),
                                   firstDate: DateTime(1900),
                                   lastDate: DateTime(2100));
-                              CreateddateController.text = date.toString().substring(0, 10);
+                              print(date.runtimeType);
+                              var indiandate = formatter.format(date);
+                              CreateddateController.text = indiandate.toString().substring(0, 10);
                             },),
                         ),
                         SizedBox(
@@ -282,15 +285,18 @@ class _AddProjectState extends State<AddProject> {
                                     Icons.calendar_today_rounded, size: 18.0)
                             ),
                             onTap: () async {
+                              final DateFormat formatter = DateFormat('dd-MM-yyyy');
                               var date = await showDatePicker(
                                   context: context,
                                   initialDate: DateTime.now(),
                                   firstDate: DateTime(1900),
                                   lastDate: DateTime(2100));
-                              DuedateController.text = date.toString().substring(0, 10);
+                              var indiandate = formatter.format(date);
+                              DuedateController.text = indiandate.toString().substring(0, 10);
+
                               var startDate = CreateddateController.text;
                               var EndDate = DuedateController.text;
-                              print(EndDate.compareTo(startDate));
+
                               if(EndDate.compareTo(startDate) < 0)
                               {
                                 Fluttertoast.showToast(

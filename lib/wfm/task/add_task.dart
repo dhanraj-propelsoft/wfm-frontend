@@ -100,7 +100,7 @@ class _AddTaskState extends State<AddTask> {
     bl.display();
     var res = await Network().getMethodWithToken('/ProjBasedCategory/$ProjId');
     var body = json.decode(res.body);
-    print(body);
+
     if(body['status'] == 1){
         var projectData = body['projecData'];
         var catgoryData = body['categoryData'];
@@ -141,7 +141,7 @@ class _AddTaskState extends State<AddTask> {
     if(body['status'] == 1){
       var result = body['data'];
       var now = new DateTime.now();
-      var formatter = new DateFormat('yyyy-MM-dd');
+      var formatter = new DateFormat('dd-MM-yyyy');
       String todayDate = formatter.format(now);
       setState(() {
         AssignedbyList = result['pAssignedbyList'];
@@ -172,6 +172,8 @@ class _AddTaskState extends State<AddTask> {
       _isLoading = true;
     });
     int orgId = await Network().GetActiveOrg();
+
+
     var data = {'pName' : name,'pDetails':Details,'pStartDate':StartDate,'pEndDate':EndDate,'pAssignedBy':assignedby,'pAssignedTo':assignedto,'pCategoryId':category,'pProjectId':project,'pProrityId':prority,'pFollower':_selected_followers,'orgId':orgId};
 
     var res = await Network().postMethodWithToken(data, '/taskStore');
@@ -282,7 +284,7 @@ class _AddTaskState extends State<AddTask> {
                                 suffixIcon: Icon(Icons.calendar_today_rounded,size: 18.0)
                             ),
                             onTap: () async {
-                              // final DateTime now = DateTime.now();
+
                               final DateFormat formatter = DateFormat('dd-MM-yyyy');
                               var date =  await showDatePicker(
                                   context: context,
@@ -290,7 +292,9 @@ class _AddTaskState extends State<AddTask> {
                                   firstDate:DateTime(1900),
                                   lastDate: DateTime(2100)
                               );
-                              CreateddateController.text = date.toString().substring(0,10);
+                              var indiandate = formatter.format(date);
+
+                              CreateddateController.text = indiandate.toString().substring(0,10);
                             },),
                         ),
                         SizedBox(
@@ -315,7 +319,8 @@ class _AddTaskState extends State<AddTask> {
                                   initialDate:DateTime.now(),
                                   firstDate:DateTime(1900),
                                   lastDate: DateTime(2100));
-                              DuedateController.text = date.toString().substring(0,10);
+                              var indiandate = formatter.format(date);
+                              DuedateController.text = indiandate.toString().substring(0,10);
 
                               if(ProjEndDate != null){
                                 // var startDate = ProjEndDate;
