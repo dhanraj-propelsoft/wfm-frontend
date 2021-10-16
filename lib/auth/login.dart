@@ -96,10 +96,40 @@ class _LoginPageState extends State<LoginPage> {
             Container(
               child: Column(
                 children: <Widget>[
-                  InternationalPhoneNumberInput(
-                    onInputChanged: (PhoneNumber number) {
-                      if (number.phoneNumber.trim().isEmpty ||
-                          number.phoneNumber.length != 13) {
+                  // InternationalPhoneNumberInput(
+                  //   onInputChanged: (PhoneNumber number) {
+                  //     if (number.phoneNumber.trim().isEmpty ||
+                  //         number.phoneNumber.length != 13) {
+                  //       setState(() {
+                  //         isButtonEnabled = false;
+                  //       });
+                  //     } else {
+                  //       setState(() {
+                  //         isButtonEnabled = true;
+                  //       });
+                  //     }
+                  //   },
+                  //   onInputValidated: (bool value) {},
+                  //   selectorConfig: SelectorConfig(
+                  //     selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
+                  //   ),
+                  //   ignoreBlank: false,
+                  //   autoValidateMode: AutovalidateMode.disabled,
+                  //   selectorTextStyle: TextStyle(color: Colors.black),
+                  //   initialValue: number,
+                  //   textFieldController: phoneNo,
+                  //   formatInput: false,
+                  //   keyboardType: TextInputType.numberWithOptions(
+                  //       signed: true, decimal: true),
+                  //   inputBorder: OutlineInputBorder(),
+                  //   onSaved: (PhoneNumber number) {
+                  //     print('On Saved: $number');
+                  //   },
+                  // ),
+
+                  TextField(
+                    onChanged: (val) {
+                      if (val.trim().isEmpty || val.length != 10) {
                         setState(() {
                           isButtonEnabled = false;
                         });
@@ -109,22 +139,17 @@ class _LoginPageState extends State<LoginPage> {
                         });
                       }
                     },
-                    onInputValidated: (bool value) {},
-                    selectorConfig: SelectorConfig(
-                      selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
+
+                    decoration: InputDecoration(
+                      labelText: 'Mobile No',
+                      hintText: "Enter Mobile No",
+                      prefixIcon: const Icon(
+                        Icons.phone_android,
+                        color: Colors.blue,
+                      ),
+
                     ),
-                    ignoreBlank: false,
-                    autoValidateMode: AutovalidateMode.disabled,
-                    selectorTextStyle: TextStyle(color: Colors.black),
-                    initialValue: number,
-                    textFieldController: phoneNo,
-                    formatInput: false,
-                    keyboardType: TextInputType.numberWithOptions(
-                        signed: true, decimal: true),
-                    inputBorder: OutlineInputBorder(),
-                    onSaved: (PhoneNumber number) {
-                      print('On Saved: $number');
-                    },
+                    controller: phoneNo,
                   ),
                 ],
               ),
