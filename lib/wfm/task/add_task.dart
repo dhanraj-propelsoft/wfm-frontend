@@ -141,19 +141,21 @@ class _AddTaskState extends State<AddTask> {
     if(body['status'] == 1){
       var result = body['data'];
       var now = new DateTime.now();
-      var formatter = new DateFormat('dd-MM-yyyy');
+      var formatter = new DateFormat('yyyy-MM-dd');
       String todayDate = formatter.format(now);
       setState(() {
         AssignedbyList = result['pAssignedbyList'];
         AssignedtoList = result['pAssignedtoList'];
         FollowerList = result['pFollowerList'];
         tempFollowerList = result['pFollowerList'];
-        // result['pFollowerList'].forEach((item) => _companies .add(CompanyWidget(int.parse(item['person_id']), item['first_name'])));
+        // result['pFollowerList']['person'].forEach((item) => _companies .add(CompanyWidget(int.parse(item['id']), item['first_name'])));
         categoryList = result['pCategoryDatas'];
         projectList = result['pProjectDatas'];
         CreateddateController.text = todayDate;
         DuedateController.text = todayDate;
         _isLoading = false;
+
+
       });
     }else{
       Fluttertoast.showToast(
@@ -558,7 +560,14 @@ class _AddTaskState extends State<AddTask> {
                 //     maxChildSize: 0.95,
                 //     title: Text("Select Followers"),
                 //     buttonText: Text("Followers"),
-                //     items:  _companies.map((animal) => MultiSelectItem(animal.id, animal.name)).toList(),
+                //     items: _companies?.map((item) {
+                //       print(item);
+                //       // return MultiSelectItem(
+                //       //   child: new Text(item['person']['first_name']),
+                //       //   value: item['person']['id'],
+                //       // );
+                //     })?.toList() ?? [],
+                //     // items:  _companies.map((animal) => MultiSelectItem(animal.id, animal.name.toString())).toList(),
                 //     searchable: true,
                 //     onConfirm: (values) {
                 //       setState(() {

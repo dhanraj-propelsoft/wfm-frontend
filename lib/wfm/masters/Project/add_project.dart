@@ -263,7 +263,7 @@ class _AddProjectState extends State<AddProject> {
                                   initialDate: DateTime.now(),
                                   firstDate: DateTime(1900),
                                   lastDate: DateTime(2100));
-                              print(date.runtimeType);
+
                               var indiandate = formatter.format(date);
                               CreateddateController.text = indiandate.toString().substring(0, 10);
                             },),

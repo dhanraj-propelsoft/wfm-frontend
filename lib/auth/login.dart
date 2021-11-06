@@ -27,7 +27,7 @@ class _LoginPageState extends State<LoginPage> {
     bl = new BottomLoader(
       context,
       showLogs: true,
-      isDismissible: true,
+      isDismissible: false,
     );
     bl.style(
       message: 'Please wait...',

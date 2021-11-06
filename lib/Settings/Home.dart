@@ -122,6 +122,7 @@ class _SettingState extends State<Setting> {
 
     showModalBottomSheet(
         isScrollControlled: true,
+        isDismissible: false,
         context: context,
         builder: (context) {
           final double bottomsheet_height = MediaQuery.of(context).size.height * 0.10 - 50;
